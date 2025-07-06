@@ -11,7 +11,7 @@
     <!-- Chart.js for charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-      <link rel="icon" href="icon.png">
+    <link rel="icon" href="icon.png">
     
     <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,9 +24,9 @@
             background-color: #f7f8fc; 
         }
         .tab-button.active {
-            background-color: #6366f1; /* Indigo 500 */
-            color: white;
-            box-shadow: 0 4px 14px 0 rgb(99 102 241 / 39%);
+            background-color: white;
+            color: #6366f1; /* Indigo 500 */
+            box-shadow: 0 4px 14px 0 rgb(0 0 0 / 10%);
         }
         .calendar-day.other-month {
             background-color: #f1f5f9; /* slate-100 */
@@ -157,7 +157,7 @@
     
     <!-- Bottom Navigation -->
     <div class="fixed bottom-0 left-0 right-0 p-3">
-        <div class="flex justify-around items-center max-w-lg mx-auto p-1 bg-white/80 backdrop-blur-xl rounded-full shadow-lg ring-1 ring-black ring-opacity-5">
+        <div class="flex justify-around items-center max-w-lg mx-auto p-1.5 bg-white/50 backdrop-blur-lg rounded-full shadow-lg ring-1 ring-black ring-opacity-5">
             <button id="tab-tracker" class="tab-button flex flex-col items-center w-full py-2.5 px-2 text-slate-500 rounded-full transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
                 <span class="text-xs font-medium">รายเดือน</span>
@@ -992,3 +992,4 @@
     </script>
 </body>
 </html>
+
