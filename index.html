@@ -21,12 +21,12 @@
     <style>
         body {
             font-family: 'Kanit', sans-serif;
-            background-color: #f8fafc; /* slate-50 */
+            background-color: #f7f8fc; /* A softer, lighter background */
         }
         .tab-button.active {
-            background-color: white;
-            color: #4f46e5; /* indigo-600 */
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            background-color: #6366f1; /* Indigo 500 */
+            color: white;
+            box-shadow: 0 4px 14px 0 rgb(99 102 241 / 39%);
         }
         .calendar-day.other-month {
             background-color: #f1f5f9; /* slate-100 */
@@ -68,68 +68,89 @@
             opacity: 0;
         }
         .type-btn.active {
-            background-color: #4f46e5; /* indigo-600 */
+            background-color: #6366f1; /* Indigo 500 */
             color: white;
+            box-shadow: 0 2px 8px 0 rgb(99 102 241 / 30%);
         }
         .category-btn.active {
-            background-color: #4f46e5;
+            background-color: #6366f1;
             color: white;
-            border-color: #4f46e5;
+            border-color: #6366f1;
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+        }
+        .soft-shadow {
+             box-shadow: 0 4px 14px 0 rgb(0 0 0 / 5%);
+        }
+
+        /* --- Styles for Calendar Dots on small screens --- */
+        .dot-container {
+            display: none;
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            right: 0;
+            justify-content: center;
+            gap: 4px;
+        }
+        .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+        .dot-income { background-color: #22c55e; } /* green-500 */
+        .dot-expense { background-color: #ef4444; } /* red-500 */
+        .dot-savings { background-color: #3b82f6; } /* blue-500 */
+
+        /* Media query for small screens */
+        @media (max-width: 767px) {
+            .calendar-day .transaction-list-text {
+                display: none;
+            }
+            .dot-container {
+                display: flex;
+            }
+            .calendar-day {
+                position: relative;
+            }
         }
     </style>
 </head>
 <body class="text-slate-700">
 
-    <div class="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm border-b border-slate-200 shadow-sm z-20">
+    <div class="fixed top-0 left-0 right-0 bg-white/70 backdrop-blur-lg border-b border-slate-200/80 z-20">
         <div class="container mx-auto p-3 flex justify-between items-center">
-            <h1 class="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">บันทึกการเงิน</h1>
-            <button id="config-btn" class="p-2 rounded-full hover:bg-slate-100 transition-colors">
+            <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">สมุดบัญชี</h1>
+            <button id="config-btn" class="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
             </button>
         </div>
     </div>
 
-    <div class="container mx-auto p-4 max-w-5xl relative pt-16 pb-24">
+    <div class="container mx-auto p-4 max-w-5xl relative pt-20 pb-28">
         <!-- Main Content Area -->
         <main id="content-area">
-            <!-- Monthly Tracker View -->
-            <div id="tracker-view" class="view">
-                <!-- Content will be dynamically controlled -->
-            </div>
-
-            <!-- Weekly Summary View -->
-            <div id="weekly-view" class="view hidden">
-                <!-- Weekly summary content will be generated here -->
-            </div>
-
-            <!-- Calendar View -->
-            <div id="calendar-view" class="view hidden">
-                <!-- Calendar will be generated here -->
-            </div>
-
-            <!-- Yearly Summary View -->
-            <div id="summary-view" class="view hidden">
-                <!-- Yearly summary content will be generated here -->
-            </div>
-
-            <!-- Config View -->
+            <!-- Views will be injected here -->
+            <div id="tracker-view" class="view"></div>
+            <div id="weekly-view" class="view hidden"></div>
+            <div id="calendar-view" class="view hidden"></div>
+            <div id="summary-view" class="view hidden"></div>
             <div id="config-view" class="view hidden">
                 <div class="grid md:grid-cols-2 gap-6">
-                    <!-- Income Categories -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm">
+                    <div class="bg-white p-6 rounded-2xl card-shadow">
                         <h3 class="text-xl font-semibold mb-4 text-slate-800">หมวดหมู่รายรับ</h3>
                         <div class="flex mb-4">
-                            <input type="text" id="new-income-category" class="flex-grow border border-slate-300 rounded-l-xl p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none" placeholder="ชื่อหมวดหมู่ใหม่">
-                            <button id="add-income-category-btn" class="bg-emerald-500 text-white px-4 rounded-r-xl hover:bg-emerald-600 transition-colors">เพิ่ม</button>
+                            <input type="text" id="new-income-category" class="flex-grow border border-slate-300 rounded-l-lg p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none transition" placeholder="ชื่อหมวดหมู่ใหม่">
+                            <button id="add-income-category-btn" class="bg-emerald-500 text-white px-5 rounded-r-lg hover:bg-emerald-600 transition-colors font-semibold">เพิ่ม</button>
                         </div>
                         <ul id="income-category-list" class="space-y-2"></ul>
                     </div>
-                    <!-- Expense Categories -->
-                    <div class="bg-white p-6 rounded-3xl shadow-sm">
+                    <div class="bg-white p-6 rounded-2xl card-shadow">
                         <h3 class="text-xl font-semibold mb-4 text-slate-800">หมวดหมู่รายจ่าย</h3>
                         <div class="flex mb-4">
-                            <input type="text" id="new-expense-category" class="flex-grow border border-slate-300 rounded-l-xl p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none" placeholder="ชื่อหมวดหมู่ใหม่">
-                            <button id="add-expense-category-btn" class="bg-rose-500 text-white px-4 rounded-r-xl hover:bg-rose-600 transition-colors">เพิ่ม</button>
+                            <input type="text" id="new-expense-category" class="flex-grow border border-slate-300 rounded-l-lg p-3 focus:ring-2 focus:ring-indigo-400 focus:outline-none transition" placeholder="ชื่อหมวดหมู่ใหม่">
+                            <button id="add-expense-category-btn" class="bg-rose-500 text-white px-5 rounded-r-lg hover:bg-rose-600 transition-colors font-semibold">เพิ่ม</button>
                         </div>
                         <ul id="expense-category-list" class="space-y-2"></ul>
                     </div>
@@ -139,70 +160,71 @@
     </div>
     
     <!-- Bottom Navigation -->
-    <div class="fixed bottom-0 left-0 right-0 p-2">
-        <div class="flex justify-around items-center max-w-lg mx-auto p-1.5 bg-slate-200/60 backdrop-blur-sm rounded-full shadow-md">
-            <button id="tab-tracker" class="tab-button flex flex-col items-center w-full py-2 px-2 text-slate-500 rounded-full transition-all duration-300">
+    <div class="fixed bottom-0 left-0 right-0 p-3 bg-white/70 backdrop-blur-lg border-t border-slate-200/80">
+        <div class="flex justify-around items-center max-w-lg mx-auto p-1 bg-slate-100 rounded-full">
+            <button id="tab-tracker" class="tab-button flex flex-col items-center w-full py-2.5 px-2 text-slate-500 rounded-full transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
-                <span class="text-xs">รายเดือน</span>
+                <span class="text-xs font-medium">รายเดือน</span>
             </button>
-            <button id="tab-weekly" class="tab-button flex flex-col items-center w-full py-2 px-2 text-slate-500 rounded-full transition-all duration-300">
+            <button id="tab-weekly" class="tab-button flex flex-col items-center w-full py-2.5 px-2 text-slate-500 rounded-full transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>
-                <span class="text-xs">รายสัปดาห์</span>
+                <span class="text-xs font-medium">รายสัปดาห์</span>
             </button>
-            <button id="tab-calendar" class="tab-button flex flex-col items-center w-full py-2 px-2 text-slate-500 rounded-full transition-all duration-300">
+            <button id="tab-calendar" class="tab-button flex flex-col items-center w-full py-2.5 px-2 text-slate-500 rounded-full transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                <span class="text-xs">ปฏิทิน</span>
+                <span class="text-xs font-medium">ปฏิทิน</span>
             </button>
-            <button id="tab-summary" class="tab-button flex flex-col items-center w-full py-2 px-2 text-slate-500 rounded-full transition-all duration-300">
+            <button id="tab-summary" class="tab-button flex flex-col items-center w-full py-2.5 px-2 text-slate-500 rounded-full transition-all duration-300">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
-                <span class="text-xs">สรุปรายปี</span>
+                <span class="text-xs font-medium">สรุปรายปี</span>
             </button>
         </div>
     </div>
 
     <!-- Transaction Modal -->
-    <div id="transaction-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
+    <div id="transaction-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-2xl w-full max-w-md modal-enter border-t-4 border-indigo-500 flex flex-col max-h-[90vh]">
             <h2 id="modal-title" class="text-2xl font-bold mb-6 text-slate-800 flex-shrink-0">เพิ่มรายการใหม่</h2>
             <div class="flex-grow overflow-y-auto no-scrollbar -mr-4 pr-4">
                 <form id="transaction-form">
                     <input type="hidden" id="transaction-id">
-                    <div class="mb-4">
+                    <div class="mb-5">
                         <label class="block text-slate-700 mb-2 font-medium">ประเภท</label>
                         <input type="hidden" id="transaction-type-hidden" value="income">
-                        <div id="transaction-type-buttons" class="grid grid-cols-3 gap-1 rounded-full bg-slate-200/60 p-1">
-                            <button type="button" data-value="income" class="type-btn py-2 px-4 text-sm font-medium rounded-full">รายรับ</button>
-                            <button type="button" data-value="expense" class="type-btn py-2 px-4 text-sm font-medium rounded-full">รายจ่าย</button>
-                            <button type="button" data-value="savings" class="type-btn py-2 px-4 text-sm font-medium rounded-full">ออม</button>
+                        <div id="transaction-type-buttons" class="grid grid-cols-3 gap-2 rounded-full bg-slate-100 p-1.5">
+                            <button type="button" data-value="income" class="type-btn py-2 px-4 text-sm font-medium rounded-full transition-all">รายรับ</button>
+                            <button type="button" data-value="expense" class="type-btn py-2 px-4 text-sm font-medium rounded-full transition-all">รายจ่าย</button>
+                            <button type="button" data-value="savings" class="type-btn py-2 px-4 text-sm font-medium rounded-full transition-all">ออม</button>
                         </div>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-5">
                         <label for="transaction-description" class="block text-slate-700 mb-2 font-medium">คำอธิบาย</label>
-                        <input type="text" id="transaction-description" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none" required>
+                        <input type="text" id="transaction-description" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none transition" required>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-5">
                         <label for="transaction-amount" class="block text-slate-700 mb-2 font-medium">จำนวนเงิน</label>
-                        <input type="number" id="transaction-amount" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none" required min="0" step="0.01">
+                        <input type="number" id="transaction-amount" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none transition" required min="0" step="0.01">
                     </div>
-                    <div id="category-wrapper" class="mb-4">
-                        <label for="transaction-category" class="block text-slate-700 mb-2 font-medium">หมวดหมู่</label>
-                        <select id="transaction-category" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none" required></select>
+                    <div id="category-wrapper" class="mb-5">
+                        <label class="block text-slate-700 mb-2 font-medium">หมวดหมู่</label>
+                        <div id="transaction-category-buttons" class="flex flex-wrap gap-2"></div>
+                        <input type="hidden" id="transaction-category-hidden" required>
                     </div>
-                    <div class="mb-4">
+                    <div class="mb-5">
                         <label for="transaction-date" class="block text-slate-700 mb-2 font-medium">วันที่</label>
-                        <input type="date" id="transaction-date" class="w-full p-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-400 focus:outline-none" required>
+                        <input type="date" id="transaction-date" class="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none transition" required>
                     </div>
                 </form>
             </div>
             <div class="flex justify-end space-x-4 mt-6 flex-shrink-0">
-                <button type="button" id="cancel-btn" class="bg-slate-200 text-slate-800 px-6 py-3 rounded-xl hover:bg-slate-300 font-semibold transition-colors">ยกเลิก</button>
-                <button type="submit" form="transaction-form" class="bg-indigo-600 text-white px-6 py-3 rounded-xl hover:bg-indigo-700 font-semibold transition-colors">บันทึก</button>
+                <button type="button" id="cancel-btn" class="bg-slate-200 text-slate-800 px-6 py-3 rounded-lg hover:bg-slate-300 font-semibold transition-colors">ยกเลิก</button>
+                <button type="submit" form="transaction-form" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 font-semibold transition-colors shadow-lg shadow-indigo-500/30">บันทึก</button>
             </div>
         </div>
     </div>
 
     <!-- Daily Details Modal -->
-    <div id="daily-details-modal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center hidden z-50 p-4">
+    <div id="daily-details-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 sm:p-8 rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col modal-enter border-t-4 border-slate-500">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="daily-modal-title" class="text-2xl font-bold text-slate-800">รายการ</h2>
@@ -210,9 +232,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
-            <div id="daily-transaction-list" class="space-y-3 overflow-y-auto no-scrollbar">
-                <!-- Daily transactions will be injected here -->
-            </div>
+            <div id="daily-transaction-list" class="space-y-3 overflow-y-auto no-scrollbar"></div>
         </div>
     </div>
 
@@ -321,26 +341,26 @@
             return `
                 <div class="mb-6">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 id="current-month-year" class="text-xl md:text-2xl font-bold text-slate-800"></h2>
-                        <div class="flex items-center gap-2">
-                           <button id="prev-month" class="p-2 rounded-full hover:bg-slate-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                           <button id="next-month" class="p-2 rounded-full hover:bg-slate-100 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                        <h2 id="current-month-year" class="text-2xl font-bold text-slate-800"></h2>
+                        <div class="flex items-center gap-1">
+                           <button id="prev-month" class="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                           <button id="next-month" class="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
-                        <div class="bg-white p-4 rounded-3xl shadow-sm border-t-4 border-emerald-400"><div class="flex items-center gap-2"><div class="w-8 h-8 flex items-center justify-center rounded-full text-emerald-500"><img src="https://cdn-icons-png.flaticon.com/512/3135/3135673.png" class="h-6 w-6"></div><p class="text-sm text-slate-500 font-medium">รายรับ</p></div><p id="total-income" class="text-2xl font-bold text-emerald-600 mt-2">฿0.00</p></div>
-                        <div class="bg-white p-4 rounded-3xl shadow-sm border-t-4 border-rose-400"><div class="flex items-center gap-2"><div class="w-8 h-8 flex items-center justify-center rounded-full text-rose-500"><img src="https://cdn-icons-png.flaticon.com/512/2510/2510727.png" class="h-6 w-6"></div><p class="text-sm text-slate-500 font-medium">รายจ่าย</p></div><p id="total-expense" class="text-2xl font-bold text-rose-600 mt-2">฿0.00</p></div>
-                        <div class="bg-white p-4 rounded-3xl shadow-sm border-t-4 border-sky-400"><div class="flex items-center gap-2"><div class="w-8 h-8 flex items-center justify-center rounded-full text-sky-500"><img src="https://cdn-icons-png.flaticon.com/512/1960/1960012.png" class="h-6 w-6"></div><p class="text-sm text-slate-500 font-medium">ออม</p></div><p id="total-savings" class="text-2xl font-bold text-sky-600 mt-2">฿0.00</p></div>
-                        <div class="bg-white p-4 rounded-3xl shadow-sm border-t-4 border-indigo-400"><div class="flex items-center gap-2"><div class="w-8 h-8 flex items-center justify-center rounded-full text-indigo-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg></div><p class="text-sm text-slate-500 font-medium">คงเหลือ</p></div><p id="balance" class="text-2xl font-bold text-indigo-600 mt-2">฿0.00</p></div>
+                        <div class="bg-white p-4 rounded-2xl card-shadow"><div class="flex items-center gap-3"><div class="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-100 text-emerald-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg></div><p class="text-sm text-slate-500 font-medium">รายรับ</p></div><p id="total-income" class="text-2xl font-bold text-emerald-600 mt-2">฿0.00</p></div>
+                        <div class="bg-white p-4 rounded-2xl card-shadow"><div class="flex items-center gap-3"><div class="w-10 h-10 flex items-center justify-center rounded-full bg-rose-100 text-rose-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg></div><p class="text-sm text-slate-500 font-medium">รายจ่าย</p></div><p id="total-expense" class="text-2xl font-bold text-rose-600 mt-2">฿0.00</p></div>
+                        <div class="bg-white p-4 rounded-2xl card-shadow"><div class="flex items-center gap-3"><div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></div><p class="text-sm text-slate-500 font-medium">ออม</p></div><p id="total-savings" class="text-2xl font-bold text-blue-600 mt-2">฿0.00</p></div>
+                        <div class="bg-white p-4 rounded-2xl card-shadow"><div class="flex items-center gap-3"><div class="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg></div><p class="text-sm text-slate-500 font-medium">คงเหลือ</p></div><p id="balance" class="text-2xl font-bold text-indigo-600 mt-2">฿0.00</p></div>
                     </div>
                 </div>
-                <div class="my-6 flex justify-end"><button id="add-transaction-btn" class="bg-blue-500 text-white px-5 py-2.5 rounded-xl hover:bg-blue-600 font-semibold transition-colors flex items-center gap-2 shadow-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg><span>เพิ่มรายการ</span></button></div>
+                <div class="my-6 flex justify-end"><button id="add-transaction-btn" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-3 rounded-lg hover:opacity-90 font-semibold transition-opacity flex items-center gap-2 shadow-lg shadow-indigo-500/30"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg><span>เพิ่มรายการ</span></button></div>
                 <div class="grid md:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm flex flex-col"><div class="flex justify-between items-center mb-4 cursor-pointer" id="toggle-income-chart-btn"><h3 class="text-xl font-semibold text-slate-800">สัดส่วนรายรับ</h3><svg id="income-chart-chevron" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div id="income-chart-container" class="chart-container relative h-64 md:h-72 flex-grow"><canvas id="income-chart"></canvas></div></div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm flex flex-col"><div class="flex justify-between items-center mb-4 cursor-pointer" id="toggle-expense-chart-btn"><h3 class="text-xl font-semibold text-slate-800">สัดส่วนรายจ่าย</h3><svg id="expense-chart-chevron" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div id="expense-chart-container" class="chart-container relative h-64 md:h-72 flex-grow"><canvas id="expense-chart"></canvas></div></div>
+                    <div class="bg-white p-6 rounded-2xl card-shadow flex flex-col"><div class="flex justify-between items-center mb-4 cursor-pointer" id="toggle-income-chart-btn"><h3 class="text-xl font-semibold text-slate-800">สัดส่วนรายรับ</h3><svg id="income-chart-chevron" class="w-6 h-6 transition-transform duration-300 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div id="income-chart-container" class="chart-container relative h-64 md:h-72 flex-grow"><canvas id="income-chart"></canvas></div></div>
+                    <div class="bg-white p-6 rounded-2xl card-shadow flex flex-col"><div class="flex justify-between items-center mb-4 cursor-pointer" id="toggle-expense-chart-btn"><h3 class="text-xl font-semibold text-slate-800">สัดส่วนรายจ่าย</h3><svg id="expense-chart-chevron" class="w-6 h-6 transition-transform duration-300 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div id="expense-chart-container" class="chart-container relative h-64 md:h-72 flex-grow"><canvas id="expense-chart"></canvas></div></div>
                 </div>
                 <div id="category-summary-container" class="mb-6"></div>
-                <div class="bg-white p-6 rounded-3xl shadow-sm">
+                <div class="bg-white p-6 rounded-2xl card-shadow">
                     <h3 class="text-xl font-semibold text-slate-800 mb-4">รายการล่าสุด</h3>
                     <div id="transaction-list" class="space-y-3"></div>
                 </div>
@@ -397,7 +417,7 @@
             transactionListEl.innerHTML = '';
 
             if (transactions.length === 0) {
-                transactionListEl.innerHTML = `<p class="text-center text-slate-500 py-4">ไม่มีรายการ</p>`;
+                transactionListEl.innerHTML = `<p class="text-center text-slate-500 py-6">ยังไม่มีรายการในเดือนนี้</p>`;
             } else {
                 const groupedTransactions = transactions.reduce((acc, t) => {
                     const date = t.date;
@@ -419,7 +439,7 @@
                     const dailyTransactions = groupedTransactions[date];
                     dailyTransactions.sort((a, b) => b.id.localeCompare(a.id));
                     dailyTransactions.forEach(t => {
-                         if (t.type === 'income') {
+                        if (t.type === 'income') {
                             totalIncome += t.amount;
                             incomeData[t.category] = (incomeData[t.category] || 0) + t.amount;
                         } else if (t.type === 'expense') {
@@ -442,12 +462,12 @@
             
             const categorySummaryEl = view.querySelector('#category-summary-container');
             if (categorySummaryEl) {
-                let summaryHtml = '<div class="bg-white p-6 rounded-3xl shadow-sm">';
+                let summaryHtml = '<div class="bg-white p-6 rounded-2xl card-shadow">';
                 summaryHtml += `<h3 class="text-xl font-semibold mb-4 text-slate-800">สรุปตามหมวดหมู่</h3>`;
                 summaryHtml += '<div class="grid md:grid-cols-2 gap-x-8 gap-y-4">';
 
                 // Income summary
-                summaryHtml += '<div><h4 class="font-semibold text-emerald-700 mb-2 border-b pb-1">รายรับ</h4><ul class="space-y-1 mt-2">';
+                summaryHtml += '<div><h4 class="font-semibold text-emerald-700 mb-2 border-b pb-1">รายรับ</h4><ul class="space-y-1.5 mt-2">';
                 if (Object.keys(incomeData).length > 0) {
                     Object.entries(incomeData).forEach(([category, amount]) => {
                         summaryHtml += `<li class="flex justify-between text-sm"><span>${category}</span><span class="font-medium text-slate-800">${formatCurrency(amount)}</span></li>`;
@@ -458,7 +478,7 @@
                 summaryHtml += '</ul></div>';
 
                 // Expense summary
-                summaryHtml += '<div><h4 class="font-semibold text-rose-700 mb-2 border-b pb-1">รายจ่าย</h4><ul class="space-y-1 mt-2">';
+                summaryHtml += '<div><h4 class="font-semibold text-rose-700 mb-2 border-b pb-1">รายจ่าย</h4><ul class="space-y-1.5 mt-2">';
                 if (Object.keys(expenseData).length > 0) {
                     Object.entries(expenseData).forEach(([category, amount]) => {
                         summaryHtml += `<li class="flex justify-between text-sm"><span>${category}</span><span class="font-medium text-slate-800">${formatCurrency(amount)}</span></li>`;
@@ -522,31 +542,42 @@
                 });
 
             let calendarHtml = `
-                <div class="bg-white p-6 rounded-3xl shadow-sm">
+                <div class="bg-white p-4 sm:p-6 rounded-2xl card-shadow">
                     <div class="flex items-center justify-between mb-4">
-                        <button id="prev-cal-month" class="p-2 rounded-full hover:bg-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                        <h2 class="text-2xl font-bold text-slate-800">${getThaiMonthName(month)} ${year + 543}</h2>
-                        <button id="next-cal-month" class="p-2 rounded-full hover:bg-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                        <button id="prev-cal-month" class="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                        <h2 class="text-xl sm:text-2xl font-bold text-slate-800">${getThaiMonthName(month)} ${year + 543}</h2>
+                        <button id="next-cal-month" class="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
                     </div>
-                    <div class="grid grid-cols-7 gap-1 text-center font-semibold text-slate-500">
-                        ${[...Array(7).keys()].map(d => `<div>${getDayName(d)}</div>`).join('')}
+                    <div class="grid grid-cols-7 gap-1 text-center font-semibold text-slate-500 mb-2">
+                        ${[...Array(7).keys()].map(d => `<div class="text-xs">${getDayName(d)}</div>`).join('')}
                     </div>
-                    <div id="calendar-grid" class="grid grid-cols-7 gap-1 mt-2">
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-1">
             `;
             
-            for (let i = 0; i < firstDay; i++) calendarHtml += `<div class="calendar-day other-month border rounded-2xl"></div>`;
+            for (let i = 0; i < firstDay; i++) calendarHtml += `<div class="calendar-day other-month rounded-lg"></div>`;
             
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                calendarHtml += `<div class="calendar-day h-24 md:h-28 border border-slate-200 rounded-2xl p-2 flex flex-col cursor-pointer hover:bg-slate-100 transition-colors" data-date="${dateStr}">
-                    <span class="font-semibold text-slate-800">${day}</span>
-                    <div class="text-xs mt-1 flex-grow">`;
+                
+                calendarHtml += `<div class="calendar-day aspect-square border border-slate-200/80 rounded-lg p-1.5 flex flex-col items-center cursor-pointer hover:bg-slate-100 transition-colors" data-date="${dateStr}">
+                    <span class="font-medium text-slate-700 text-sm">${day}</span>
+                    
+                    <div class="transaction-list-text text-xs mt-1 flex-grow overflow-y-auto no-scrollbar">`;
                 if (dailyData[day]) {
-                    if(dailyData[day].income > 0) calendarHtml += `<p class="text-emerald-600 truncate">+${formatCurrency(dailyData[day].income)}</p>`;
-                    if(dailyData[day].expense > 0) calendarHtml += `<p class="text-rose-600 truncate">-${formatCurrency(dailyData[day].expense)}</p>`;
-                    if(dailyData[day].savings > 0) calendarHtml += `<p class="text-sky-600 truncate">=${formatCurrency(dailyData[day].savings)}</p>`;
+                    if(dailyData[day].income > 0) calendarHtml += `<p class="text-emerald-600 truncate leading-tight">+${formatCurrency(dailyData[day].income)}</p>`;
+                    if(dailyData[day].expense > 0) calendarHtml += `<p class="text-rose-600 truncate leading-tight">-${formatCurrency(dailyData[day].expense)}</p>`;
+                    if(dailyData[day].savings > 0) calendarHtml += `<p class="text-blue-600 truncate leading-tight">=${formatCurrency(dailyData[day].savings)}</p>`;
                 }
-                calendarHtml += `</div></div>`;
+                calendarHtml += `</div>
+
+                    <div class="dot-container">`;
+                if (dailyData[day]) {
+                    if(dailyData[day].income > 0) calendarHtml += `<div class="dot dot-income"></div>`;
+                    if(dailyData[day].expense > 0) calendarHtml += `<div class="dot dot-expense"></div>`;
+                    if(dailyData[day].savings > 0) calendarHtml += `<div class="dot dot-savings"></div>`;
+                }
+                calendarHtml += `</div>
+                </div>`;
             }
 
             calendarHtml += `</div></div>`;
@@ -560,20 +591,20 @@
         function renderSummaryView() {
             const view = document.getElementById('summary-view');
             view.innerHTML = `
-                 <div class="bg-white p-6 rounded-3xl shadow-sm">
-                    <div class="flex items-center justify-center mb-4 gap-4">
-                        <button id="prev-year" class="p-2 rounded-full hover:bg-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                        <h2 id="current-year" class="text-2xl font-bold text-slate-800"></h2>
-                        <button id="next-year" class="p-2 rounded-full hover:bg-slate-100"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
-                    </div>
-                    <div class="overflow-x-auto"><table class="min-w-full divide-y divide-slate-200"><thead class="bg-slate-50"><tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase">เดือน</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">รายรับ</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">รายจ่าย</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">ออม</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase">คงเหลือ</th>
-                    </tr></thead><tbody id="yearly-summary-table" class="bg-white divide-y divide-slate-200"></tbody></table></div>
-                </div>`;
+                 <div class="bg-white p-6 rounded-2xl card-shadow">
+                     <div class="flex items-center justify-center mb-4 gap-4">
+                         <button id="prev-year" class="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                         <h2 id="current-year" class="text-2xl font-bold text-slate-800"></h2>
+                         <button id="next-year" class="p-2 rounded-full hover:bg-slate-100 active:bg-slate-200"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                     </div>
+                     <div class="overflow-x-auto"><table class="min-w-full divide-y divide-slate-200"><thead class="bg-slate-50"><tr>
+                         <th class="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">เดือน</th>
+                         <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">รายรับ</th>
+                         <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">รายจ่าย</th>
+                         <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">ออม</th>
+                         <th class="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">คงเหลือ</th>
+                     </tr></thead><tbody id="yearly-summary-table" class="bg-white divide-y divide-slate-200"></tbody></table></div>
+                 </div>`;
 
             view.querySelector('#prev-year').addEventListener('click', () => { currentYear--; renderSummaryView(); });
             view.querySelector('#next-year').addEventListener('click', () => { currentYear++; renderSummaryView(); });
@@ -601,14 +632,14 @@
                 totalYearlyExpense += monthData.expense;
                 totalYearlySavings += monthData.savings;
                 const tr = document.createElement('tr');
-                tr.className = 'cursor-pointer hover:bg-slate-50';
+                tr.className = 'cursor-pointer hover:bg-slate-50 transition-colors';
                 tr.dataset.year = currentYear;
                 tr.dataset.month = i;
                 tr.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-800">${getThaiMonthName(i)}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-emerald-600">${formatCurrency(monthData.income)}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right text-rose-600">${formatCurrency(monthData.expense)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sky-600">${formatCurrency(monthData.savings)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-blue-600">${formatCurrency(monthData.savings)}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-right font-semibold ${balance >= 0 ? 'text-indigo-600' : 'text-rose-600'}">${formatCurrency(balance)}</td>`;
                 tableBody.appendChild(tr);
             }
@@ -621,7 +652,7 @@
                 <td class="px-6 py-4 whitespace-nowrap">รวมทั้งปี</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-emerald-700">${formatCurrency(totalYearlyIncome)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-rose-700">${formatCurrency(totalYearlyExpense)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-sky-700">${formatCurrency(totalYearlySavings)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-blue-700">${formatCurrency(totalYearlySavings)}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-right ${totalBalance >= 0 ? 'text-indigo-700' : 'text-rose-700'}">${formatCurrency(totalBalance)}</td>`;
             tableBody.appendChild(totalRow);
         }
@@ -632,9 +663,9 @@
             incomeList.innerHTML = '';
             Object.entries(incomeCategories).forEach(([id, name]) => {
                 const li = document.createElement('li');
-                li.className = 'flex justify-between items-center bg-slate-100 p-3 rounded-xl';
+                li.className = 'flex justify-between items-center bg-slate-100 p-3 rounded-lg';
                 li.innerHTML = `<span>${name}</span>
-                    <button data-id="${id}" data-type="income" class="delete-category-btn text-rose-500 hover:text-rose-700">ลบ</button>`;
+                    <button data-id="${id}" data-type="income" class="delete-category-btn text-rose-500 hover:text-rose-700 font-semibold">ลบ</button>`;
                 incomeList.appendChild(li);
             });
 
@@ -642,9 +673,9 @@
             expenseList.innerHTML = '';
             Object.entries(expenseCategories).forEach(([id, name]) => {
                 const li = document.createElement('li');
-                li.className = 'flex justify-between items-center bg-slate-100 p-3 rounded-xl';
+                li.className = 'flex justify-between items-center bg-slate-100 p-3 rounded-lg';
                 li.innerHTML = `<span>${name}</span>
-                    <button data-id="${id}" data-type="expense" class="delete-category-btn text-rose-500 hover:text-rose-700">ลบ</button>`;
+                    <button data-id="${id}" data-type="expense" class="delete-category-btn text-rose-500 hover:text-rose-700 font-semibold">ลบ</button>`;
                 expenseList.appendChild(li);
             });
         }
@@ -652,16 +683,16 @@
         function renderTransactionItem(t, listEl) {
             const itemEl = document.createElement('div');
             const typeInfo = {
-                income: { color: 'emerald', icon: `<img src="https://cdn-icons-png.flaticon.com/512/3135/3135673.png" class="h-6 w-6">` },
-                expense: { color: 'rose', icon: `<img src="https://cdn-icons-png.flaticon.com/512/2510/2510727.png" class="h-6 w-6">` },
-                savings: { color: 'sky', icon: `<img src="https://cdn-icons-png.flaticon.com/512/1960/1960012.png" class="h-6 w-6">` }
+                income: { color: 'emerald', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg>` },
+                expense: { color: 'rose', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>` },
+                savings: { color: 'blue', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>` }
             };
             const { color, icon } = typeInfo[t.type] || { color: 'gray', icon: '' };
 
-            itemEl.className = `flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-200`;
+            itemEl.className = `flex items-center justify-between p-3 rounded-xl bg-white soft-shadow`;
             itemEl.innerHTML = `
                 <div class="flex items-center gap-4 flex-grow">
-                    <div class="w-12 h-12 rounded-full bg-${color}-100 flex items-center justify-center text-${color}-600">${icon}</div>
+                    <div class="w-11 h-11 rounded-full bg-${color}-100 flex items-center justify-center text-${color}-600">${icon}</div>
                     <div>
                         <p class="font-semibold text-slate-800">${t.description}</p>
                         <p class="text-sm text-slate-500">${t.category}</p>
@@ -671,7 +702,7 @@
                     <p class="font-bold text-lg text-slate-800">${formatCurrency(t.amount)}</p>
                 </div>
                 <div class="flex items-center gap-0">
-                    <button data-id="${t.id}" class="delete-btn p-2 text-slate-400 hover:text-rose-600 hover:bg-slate-100 rounded-full transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button>
+                    <button data-id="${t.id}" class="delete-btn p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button>
                 </div>`;
             listEl.appendChild(itemEl);
         }
@@ -679,10 +710,11 @@
         function renderCharts(incomeData, expenseData, view) {
             Chart.defaults.color = '#475569'; // slate-600
             Chart.defaults.borderColor = '#e2e8f0'; // slate-200
-            const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#475569' } }, tooltip: { callbacks: { label: (c) => `${c.label}: ${formatCurrency(c.parsed)}` }}}};
+            const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#475569', font: { family: "'Kanit', sans-serif" } } }, tooltip: { callbacks: { label: (c) => `${c.label}: ${formatCurrency(c.parsed)}` }, titleFont: { family: "'Kanit', sans-serif" }, bodyFont: { family: "'Kanit', sans-serif" }}}};
             
-            const incomeColors = ['#14532d', '#166534', '#15803d', '#16a34a', '#22c55e', '#4ade80', '#86efac'];
-            const expenseColors = ['#7f1d1d', '#991b1b', '#b91c1c', '#dc2626', '#ef4444', '#f87171', '#fca5a5'];
+            // MODIFIED: Analogous color palettes
+            const incomeColors = ['#10b981', '#059669', '#34d399', '#047857', '#6ee7b7', '#065f46', '#a7f3d0'];
+            const expenseColors = ['#f43f5e', '#e11d48', '#fb7185', '#be123c', '#fda4af', '#9f1239', '#fecdd3'];
 
             const getCategoryColor = (category, colorPalette) => {
                 let hash = 0;
@@ -698,7 +730,7 @@
             const incomeCtx = view.querySelector('#income-chart').getContext('2d');
             const incomeLabels = Object.keys(incomeData);
             if (incomeLabels.length > 0) {
-                incomeChart = new Chart(incomeCtx, { type: 'pie', data: { labels: incomeLabels, datasets: [{ data: Object.values(incomeData), backgroundColor: incomeLabels.map(label => getCategoryColor(label, incomeColors)), borderWidth: 0 }] }, options: chartOptions });
+                incomeChart = new Chart(incomeCtx, { type: 'doughnut', data: { labels: incomeLabels, datasets: [{ data: Object.values(incomeData), backgroundColor: incomeLabels.map(label => getCategoryColor(label, incomeColors)), borderWidth: 0, cutout: '60%' }] }, options: chartOptions });
             } else {
                  incomeCtx.clearRect(0, 0, incomeCtx.canvas.width, incomeCtx.canvas.height);
                  incomeCtx.textAlign = "center"; incomeCtx.font = "16px 'Kanit'"; incomeCtx.fillStyle = "#64748b";
@@ -709,7 +741,7 @@
             const expenseCtx = view.querySelector('#expense-chart').getContext('2d');
             const expenseLabels = Object.keys(expenseData);
             if (expenseLabels.length > 0) {
-                expenseChart = new Chart(expenseCtx, { type: 'pie', data: { labels: expenseLabels, datasets: [{ data: Object.values(expenseData), backgroundColor: expenseLabels.map(label => getCategoryColor(label, expenseColors)), borderWidth: 0 }] }, options: chartOptions });
+                expenseChart = new Chart(expenseCtx, { type: 'doughnut', data: { labels: expenseLabels, datasets: [{ data: Object.values(expenseData), backgroundColor: expenseLabels.map(label => getCategoryColor(label, expenseColors)), borderWidth: 0, cutout: '60%' }] }, options: chartOptions });
             } else {
                 expenseCtx.clearRect(0, 0, expenseCtx.canvas.width, expenseCtx.canvas.height);
                 expenseCtx.textAlign = "center"; expenseCtx.font = "16px 'Kanit'"; expenseCtx.fillStyle = "#64748b";
@@ -722,11 +754,12 @@
             const modalContainer = document.getElementById('transaction-modal');
             const modalContent = modalContainer.querySelector('div');
             transactionForm.reset();
+            document.getElementById('transaction-category-hidden').value = ''; 
             const modalTitle = document.getElementById('modal-title');
             
             modalTitle.textContent = 'เพิ่มรายการใหม่';
             document.getElementById('transaction-date').valueAsDate = new Date();
-            handleTypeButtonClick(null, 'income');
+            handleTypeButtonClick(null, 'income'); 
             
             modalContainer.classList.remove('hidden');
             modalContent.classList.remove('modal-leave', 'modal-leave-active');
@@ -755,36 +788,21 @@
             listEl.innerHTML = ''; // Clear previous content
 
             if (dailyTransactions.length > 0) {
-                // Calculate totals for the day
-                let dailyIncome = 0;
-                let dailyExpense = 0;
-                let dailySavings = 0;
+                let dailyIncome = 0, dailyExpense = 0, dailySavings = 0;
                 dailyTransactions.forEach(t => {
                     if (t.type === 'income') dailyIncome += t.amount;
                     else if (t.type === 'expense') dailyExpense += t.amount;
                     else if (t.type === 'savings') dailySavings += t.amount;
                 });
 
-                // Create summary HTML
                 const summaryHtml = `
                     <div class="grid grid-cols-3 gap-2 text-center mb-4 border-b pb-4">
-                        <div class="bg-emerald-100 p-2 rounded-xl">
-                            <p class="text-xs text-emerald-700">รายรับ</p>
-                            <p class="text-lg font-bold text-emerald-800">${formatCurrency(dailyIncome)}</p>
-                        </div>
-                        <div class="bg-rose-100 p-2 rounded-xl">
-                            <p class="text-xs text-rose-700">รายจ่าย</p>
-                            <p class="text-lg font-bold text-rose-800">${formatCurrency(dailyExpense)}</p>
-                        </div>
-                        <div class="bg-sky-100 p-2 rounded-xl">
-                            <p class="text-xs text-sky-700">ออม</p>
-                            <p class="text-lg font-bold text-sky-800">${formatCurrency(dailySavings)}</p>
-                        </div>
+                        <div class="bg-emerald-100 p-2 rounded-xl"><p class="text-xs text-emerald-700">รายรับ</p><p class="text-lg font-bold text-emerald-800">${formatCurrency(dailyIncome)}</p></div>
+                        <div class="bg-rose-100 p-2 rounded-xl"><p class="text-xs text-rose-700">รายจ่าย</p><p class="text-lg font-bold text-rose-800">${formatCurrency(dailyExpense)}</p></div>
+                        <div class="bg-blue-100 p-2 rounded-xl"><p class="text-xs text-blue-700">ออม</p><p class="text-lg font-bold text-blue-800">${formatCurrency(dailySavings)}</p></div>
                     </div>
                 `;
-                listEl.innerHTML += summaryHtml; // Prepend summary
-
-                // Render transaction items, newest first
+                listEl.innerHTML += summaryHtml;
                 dailyTransactions.sort((a, b) => b.id.localeCompare(a.id)).forEach(t => renderTransactionItem(t, listEl));
             } else {
                 listEl.innerHTML = `<p class="text-center text-slate-500 py-4">ไม่มีรายการในวันนี้</p>`;
@@ -804,9 +822,11 @@
 
         function populateCategoryDropdown(type) {
             const wrapper = document.getElementById('category-wrapper');
-            const select = document.getElementById('transaction-category');
-            
-            select.innerHTML = ''; // Clear previous options
+            const buttonContainer = document.getElementById('transaction-category-buttons');
+            const hiddenCategoryInput = document.getElementById('transaction-category-hidden');
+
+            buttonContainer.innerHTML = ''; 
+            hiddenCategoryInput.value = ''; 
 
             if (type === 'savings') {
                 wrapper.classList.add('hidden');
@@ -817,15 +837,17 @@
             const categories = (type === 'income') ? incomeCategories : expenseCategories;
             
             if (Object.keys(categories).length === 0) {
-                select.innerHTML = `<option value="">-- ไม่มีหมวดหมู่ --</option>`;
+                buttonContainer.innerHTML = `<p class="text-sm text-slate-500">ไม่มีหมวดหมู่ที่ตั้งค่าไว้</p>`;
                 return;
             }
             
             Object.values(categories).forEach(name => {
-                const option = document.createElement('option');
-                option.value = name;
-                option.textContent = name;
-                select.appendChild(option);
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.dataset.value = name;
+                button.textContent = name;
+                button.className = 'category-btn border border-slate-300 text-slate-700 py-2 px-4 rounded-full text-sm font-medium hover:bg-slate-100 transition-colors';
+                buttonContainer.appendChild(button);
             });
         }
 
@@ -833,16 +855,20 @@
         function addTransaction(e) {
             e.preventDefault();
             const transactionType = document.getElementById('transaction-type-hidden').value;
+            const selectedCategory = document.getElementById('transaction-category-hidden').value;
 
             const transactionData = {
                 type: transactionType,
                 description: document.getElementById('transaction-description').value,
                 amount: parseFloat(document.getElementById('transaction-amount').value),
-                category: transactionType === 'savings' ? 'การออม' : document.getElementById('transaction-category').value,
+                category: transactionType === 'savings' ? 'การออม' : selectedCategory,
                 date: document.getElementById('transaction-date').value,
             };
 
-            if(transactionType !== 'savings' && !transactionData.category) { alert('กรุณาเลือกหมวดหมู่'); return; }
+            if(transactionType !== 'savings' && !transactionData.category) { 
+                alert('กรุณาเลือกหมวดหมู่'); 
+                return; 
+            }
 
             push(ref(db, 'transactions'), transactionData)
                 .then(hideModal)
@@ -912,22 +938,28 @@
             dailyDetailsModal = document.getElementById('daily-details-modal');
             
             // --- INITIALIZE APP ---
-            // Attach other event listeners
             Object.entries(tabButtons).forEach(([name, btn]) => {
-                if(btn) {
-                    btn.addEventListener('click', () => switchView(name));
-                }
+                if(btn) btn.addEventListener('click', () => switchView(name));
             });
             
-            if (configButton) {
-                configButton.addEventListener('click', () => switchView('config'));
-            }
+            if (configButton) configButton.addEventListener('click', () => switchView('config'));
             
             // Modals
             document.getElementById('cancel-btn').addEventListener('click', hideModal);
             document.getElementById('close-daily-modal-btn').addEventListener('click', hideDailyDetailsModal);
             document.getElementById('transaction-type-buttons').addEventListener('click', handleTypeButtonClick);
             transactionForm.addEventListener('submit', addTransaction);
+
+            document.getElementById('transaction-category-buttons').addEventListener('click', (e) => {
+                const button = e.target.closest('.category-btn');
+                if (!button) return;
+
+                const hiddenInput = document.getElementById('transaction-category-hidden');
+                hiddenInput.value = button.dataset.value;
+
+                document.querySelectorAll('#transaction-category-buttons .category-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
 
             // Config View
             document.getElementById('config-view').addEventListener('click', (e) => {
@@ -937,7 +969,7 @@
             document.getElementById('add-income-category-btn').addEventListener('click', () => addCategory('income'));
             document.getElementById('add-expense-category-btn').addEventListener('click', () => addCategory('expense'));
 
-            // Firebase Data Listeners (No Auth)
+            // Firebase Data Listeners
             onValue(ref(db, 'transactions'), (snapshot) => {
                 allTransactions = snapshot.val() || {};
                 renderCurrentView();
