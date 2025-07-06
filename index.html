@@ -56,6 +56,15 @@
             transform: scale(0.95);
             transition: opacity 300ms, transform 300ms;
         }
+        .chart-container {
+            max-height: 500px; /* A large enough value */
+            transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out;
+            overflow: hidden;
+        }
+        .chart-container.hidden {
+            max-height: 0;
+            opacity: 0;
+        }
     </style>
 </head>
 <body class="text-slate-700">
@@ -211,6 +220,9 @@
         
         let incomeChart = null;
         let expenseChart = null;
+        
+        let isIncomeChartVisible = true;
+        let isExpenseChartVisible = true;
 
         // --- DOM ELEMENTS (Declare variables) ---
         let views, tabButtons, modal, transactionForm, dailyDetailsModal;
@@ -223,6 +235,24 @@
             const months = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
             return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear() + 543}`;
         };
+        const formatDateHeader = (dateString) => {
+            const date = new Date(dateString + 'T00:00:00'); 
+            const today = new Date();
+            const yesterday = new Date();
+            yesterday.setDate(today.getDate() - 1);
+
+            today.setHours(0, 0, 0, 0);
+            yesterday.setHours(0, 0, 0, 0);
+            
+            if (date.getTime() === today.getTime()) {
+                return 'วันนี้';
+            }
+            if (date.getTime() === yesterday.getTime()) {
+                return 'เมื่อวานนี้';
+            }
+            return formatShortThaiDate(date);
+        };
+
 
         // --- VIEW RENDERING ---
         function switchView(viewName) {
@@ -275,8 +305,8 @@
                     </div>
                 </div>
                 <div class="grid md:grid-cols-2 gap-6 mb-6">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm flex flex-col"><h3 class="text-xl font-semibold mb-4 text-center text-slate-800">สัดส่วนรายรับ</h3><div class="relative h-64 md:h-72 flex-grow"><canvas id="income-chart"></canvas></div></div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm flex flex-col"><h3 class="text-xl font-semibold mb-4 text-center text-slate-800">สัดส่วนรายจ่าย</h3><div class="relative h-64 md:h-72 flex-grow"><canvas id="expense-chart"></canvas></div></div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm flex flex-col"><div class="flex justify-between items-center mb-4 cursor-pointer" id="toggle-income-chart-btn"><h3 class="text-xl font-semibold text-slate-800">สัดส่วนรายรับ</h3><svg id="income-chart-chevron" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div id="income-chart-container" class="chart-container relative h-64 md:h-72 flex-grow"><canvas id="income-chart"></canvas></div></div>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm flex flex-col"><div class="flex justify-between items-center mb-4 cursor-pointer" id="toggle-expense-chart-btn"><h3 class="text-xl font-semibold text-slate-800">สัดส่วนรายจ่าย</h3><svg id="expense-chart-chevron" class="w-6 h-6 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></div><div id="expense-chart-container" class="chart-container relative h-64 md:h-72 flex-grow"><canvas id="expense-chart"></canvas></div></div>
                 </div>
                 <div id="category-summary-container" class="mb-6"></div>
                 <div class="bg-white p-6 rounded-3xl shadow-sm">
@@ -338,19 +368,37 @@
             if (transactions.length === 0) {
                 transactionListEl.innerHTML = `<p class="text-center text-slate-500 py-4">ไม่มีรายการ</p>`;
             } else {
-                // Sort by date then by ID (newest first)
-                transactions.sort((a, b) => new Date(b.date) - new Date(a.date) || b.id.localeCompare(a.id));
-                transactions.forEach(t => {
-                    if (t.type === 'income') {
-                        totalIncome += t.amount;
-                        incomeData[t.category] = (incomeData[t.category] || 0) + t.amount;
-                    } else if (t.type === 'expense') {
-                        totalExpense += t.amount;
-                        expenseData[t.category] = (expenseData[t.category] || 0) + t.amount;
-                    } else if (t.type === 'savings') {
-                        totalSavings += t.amount;
+                const groupedTransactions = transactions.reduce((acc, t) => {
+                    const date = t.date;
+                    if (!acc[date]) {
+                        acc[date] = [];
                     }
-                    renderTransactionItem(t, transactionListEl, isWeekly);
+                    acc[date].push(t);
+                    return acc;
+                }, {});
+
+                const sortedDates = Object.keys(groupedTransactions).sort((a, b) => new Date(b) - new Date(a));
+
+                sortedDates.forEach(date => {
+                    const dateHeader = document.createElement('div');
+                    dateHeader.className = 'pt-4 pb-2';
+                    dateHeader.innerHTML = `<h4 class="font-semibold text-slate-600">${formatDateHeader(date)}</h4>`;
+                    transactionListEl.appendChild(dateHeader);
+
+                    const dailyTransactions = groupedTransactions[date];
+                    dailyTransactions.sort((a, b) => b.id.localeCompare(a.id));
+                    dailyTransactions.forEach(t => {
+                         if (t.type === 'income') {
+                            totalIncome += t.amount;
+                            incomeData[t.category] = (incomeData[t.category] || 0) + t.amount;
+                        } else if (t.type === 'expense') {
+                            totalExpense += t.amount;
+                            expenseData[t.category] = (expenseData[t.category] || 0) + t.amount;
+                        } else if (t.type === 'savings') {
+                            totalSavings += t.amount;
+                        }
+                        renderTransactionItem(t, transactionListEl);
+                    });
                 });
             }
 
@@ -394,6 +442,30 @@
             }
             
             renderCharts(incomeData, expenseData, view);
+            
+            // Chart toggle logic
+            const toggleIncomeBtn = view.querySelector('#toggle-income-chart-btn');
+            const incomeChartContainer = view.querySelector('#income-chart-container');
+            const incomeChevron = view.querySelector('#income-chart-chevron');
+            toggleIncomeBtn.addEventListener('click', () => {
+                isIncomeChartVisible = !isIncomeChartVisible;
+                incomeChartContainer.classList.toggle('hidden', !isIncomeChartVisible);
+                incomeChevron.classList.toggle('rotate-180', !isIncomeChartVisible);
+            });
+            incomeChartContainer.classList.toggle('hidden', !isIncomeChartVisible);
+            incomeChevron.classList.toggle('rotate-180', !isIncomeChartVisible);
+
+
+            const toggleExpenseBtn = view.querySelector('#toggle-expense-chart-btn');
+            const expenseChartContainer = view.querySelector('#expense-chart-container');
+            const expenseChevron = view.querySelector('#expense-chart-chevron');
+            toggleExpenseBtn.addEventListener('click', () => {
+                isExpenseChartVisible = !isExpenseChartVisible;
+                expenseChartContainer.classList.toggle('hidden', !isExpenseChartVisible);
+                expenseChevron.classList.toggle('rotate-180', !isExpenseChartVisible);
+            });
+            expenseChartContainer.classList.toggle('hidden', !isExpenseChartVisible);
+            expenseChevron.classList.toggle('rotate-180', !isExpenseChartVisible);
         }
 
         function renderWeeklyView() {
@@ -546,7 +618,7 @@
             });
         }
 
-        function renderTransactionItem(t, listEl, showDate = false) {
+        function renderTransactionItem(t, listEl) {
             const itemEl = document.createElement('div');
             const typeInfo = {
                 income: { color: 'emerald', icon: `<img src="https://cdn-icons-png.flaticon.com/512/3135/3135673.png" class="h-6 w-6">` },
@@ -555,17 +627,19 @@
             };
             const { color, icon } = typeInfo[t.type] || { color: 'gray', icon: '' };
 
-            itemEl.className = `flex items-center justify-between p-4 rounded-2xl bg-${color}-50`;
+            itemEl.className = `flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-200`;
             itemEl.innerHTML = `
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 flex-grow">
                     <div class="w-12 h-12 rounded-full bg-${color}-100 flex items-center justify-center text-${color}-600">${icon}</div>
                     <div>
                         <p class="font-semibold text-slate-800">${t.description}</p>
-                        <p class="text-sm text-slate-500">${t.category}${showDate ? ` <span class="mx-1">•</span> ${formatShortThaiDate(new Date(t.date))}` : ''}</p>
+                        <p class="text-sm text-slate-500">${t.category}</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="text-right flex-shrink-0 mx-4">
                     <p class="font-bold text-lg text-slate-800">${formatCurrency(t.amount)}</p>
+                </div>
+                <div class="flex items-center gap-0">
                     <button data-id="${t.id}" class="edit-btn p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-full transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" /><path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" /></svg></button>
                     <button data-id="${t.id}" class="delete-btn p-2 text-slate-400 hover:text-rose-600 hover:bg-slate-100 rounded-full transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button>
                 </div>`;
