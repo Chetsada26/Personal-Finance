@@ -1,20 +1,16 @@
 <!DOCTYPE html>
-<!-- Add class="dark" to enable dark mode by default -->
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แอปบันทึกรายรับ-รายจ่าย (Glass UI)</title>
     
-    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <link rel="icon" href="icon.png">
     
-    <!-- Chart.js for charts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -179,7 +175,6 @@
 </head>
 <body class="bg-background text-foreground">
 
-    <!-- Header with Theme Toggle -->
     <div class="fixed top-0 left-0 right-0 z-20">
         <div class="container mx-auto p-3">
             <div class="glass-card p-3 flex justify-between items-center gap-4">
@@ -200,9 +195,7 @@
     </div>
 
     <div class="container mx-auto p-4 max-w-7xl relative pt-24 pb-28">
-        <!-- Main Content Area -->
         <main id="content-area">
-            <!-- Views will be injected here -->
             <div id="tracker-view" class="view"></div>
             <div id="weekly-view" class="view hidden"></div>
             <div id="calendar-view" class="view hidden"></div>
@@ -212,7 +205,6 @@
         </main>
     </div>
     
-    <!-- Bottom Navigation -->
     <div class="fixed bottom-0 left-0 right-0 p-3 z-20">
         <div class="glass-card flex justify-around items-center max-w-lg mx-auto p-2 !rounded-full">
             <button id="tab-tracker" class="tab-button flex flex-col items-center w-full py-2 px-2 text-muted-foreground rounded-full transition-all duration-300">
@@ -238,7 +230,6 @@
         </div>
     </div>
 
-    <!-- Modals with Glass Effect -->
     <div id="daily-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
         <div class="glass-card p-6 sm:p-8 w-full max-w-lg max-h-[90vh] flex flex-col modal-enter !rounded-3xl">
             <div class="flex justify-between items-center mb-4">
@@ -303,8 +294,52 @@
             </div>
         </div>
     </div>
+    
+    <div id="edit-transaction-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
+        <div class="glass-card p-6 sm:p-8 w-full max-w-lg max-h-[90vh] flex flex-col modal-enter !rounded-3xl">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-foreground">แก้ไขรายการ</h2>
+                <button id="close-edit-modal-btn" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <form id="edit-transaction-form" class="overflow-y-auto no-scrollbar flex-grow">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-muted-foreground mb-2 text-sm font-medium">ประเภท</label>
+                        <div id="edit-transaction-type-buttons" class="grid grid-cols-3 gap-1 rounded-xl bg-black/10 dark:bg-white/10 p-1">
+                            <button type="button" data-value="income" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">รายรับ</button>
+                            <button type="button" data-value="expense" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">รายจ่าย</button>
+                            <button type="button" data-value="savings" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">ออม</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label for="edit-transaction-description" class="block text-muted-foreground mb-2 text-sm font-medium">คำอธิบาย</label>
+                        <input type="text" id="edit-transaction-description" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required>
+                    </div>
+                    <div>
+                        <label for="edit-transaction-amount" class="block text-muted-foreground mb-2 text-sm font-medium">จำนวนเงิน</label>
+                        <input type="number" id="edit-transaction-amount" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required min="0" step="0.01">
+                    </div>
+                    <div>
+                        <label for="edit-transaction-date-display" class="block text-muted-foreground mb-2 text-sm font-medium">วันที่</label>
+                        <input type="text" id="edit-transaction-date-display" readonly class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition cursor-pointer" required>
+                        <input type="hidden" id="edit-transaction-date">
+                    </div>
+                    <div id="edit-category-wrapper" class="md:col-span-2">
+                        <label class="block text-muted-foreground mb-2 text-sm font-medium">หมวดหมู่</label>
+                        <div id="edit-transaction-category-buttons" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+                <div class="flex gap-4 mt-6">
+                    <button type="button" id="cancel-edit-btn" class="w-full px-6 py-3 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 transition-colors font-semibold">ยกเลิก</button>
+                    <button type="submit" class="w-full bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:opacity-90 font-semibold transition-opacity">บันทึกการเปลี่ยนแปลง</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-    <!-- Firebase SDK & App Logic -->
+
     <script type="module">
         // Import functions from the Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -334,6 +369,8 @@
         let currentCalendarDate = new Date();
         let currentYear = new Date().getFullYear();
         let formDate = new Date();
+        let editFormDate = new Date(); // For edit modal
+        let editingTransactionId = null; // For edit modal
         let accountStartDate = new Date();
         let datePickerDate = new Date();
         let datePickerFor = null;
@@ -365,7 +402,7 @@
         };
 
         // --- DOM ELEMENTS ---
-        let views, tabButtons, dailyDetailsModal, configButton, categoryDetailsModal, datePickerModal, confirmationModal;
+        let views, tabButtons, dailyDetailsModal, configButton, categoryDetailsModal, datePickerModal, confirmationModal, editTransactionModal;
 
         // --- HELPER FUNCTIONS ---
         const formatCurrency = (amount) => `฿${parseFloat(amount || 0).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
@@ -1252,15 +1289,23 @@
                         <p class="text-sm text-muted-foreground truncate">${t.category}</p>
                     </div>
                 </div>
-                <div class="text-right flex-shrink-0 mx-4">
+                <div class="text-right flex-shrink-0 mx-2 sm:mx-4">
                     <p class="font-bold text-lg text-foreground">${formatCurrency(t.amount)}</p>
                 </div>
-                <div class="flex items-center gap-0">
-                    <button data-id="${t.id}" class="delete-btn p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button>
+                <div class="flex items-center gap-0 flex-shrink-0">
+                    <button data-id="${t.id}" class="edit-btn p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <button data-id="${t.id}" class="delete-btn p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                    </button>
                 </div>`;
             listEl.appendChild(itemEl);
         }
-        
+
         function renderCharts(incomeData, expenseData, view) {
             const isDarkMode = document.documentElement.classList.contains('dark');
             const textColor = isDarkMode ? 'hsl(210 20% 98% / 0.8)' : 'hsl(224 71% 4% / 0.8)'; 
@@ -1434,6 +1479,49 @@
             modalContent.classList.add('modal-enter-active');
         }
 
+        function showEditTransactionModal(transactionId) {
+            editingTransactionId = transactionId;
+            const transaction = allTransactions[transactionId];
+            if (!transaction) {
+                console.error("Transaction not found for editing");
+                return;
+            }
+
+            const modal = document.getElementById('edit-transaction-modal');
+            const modalContent = modal.querySelector('.glass-card');
+
+            // Populate form
+            document.getElementById('edit-transaction-description').value = transaction.description;
+            document.getElementById('edit-transaction-amount').value = transaction.amount;
+
+            // Set date
+            editFormDate = new Date(transaction.date + 'T00:00:00');
+            const dateDisplay = document.getElementById('edit-transaction-date-display');
+            const dateInput = document.getElementById('edit-transaction-date');
+            updateDateDisplay(dateDisplay, dateInput, editFormDate);
+
+            // Set type and trigger category population
+            const typeButtons = document.getElementById('edit-transaction-type-buttons');
+            const categoryButtons = document.getElementById('edit-transaction-category-buttons');
+            const categoryWrapper = document.getElementById('edit-category-wrapper');
+
+            handleTypeButtonClick(null, transaction.type, typeButtons, categoryButtons, categoryWrapper);
+            
+            // Set category AFTER type has been set and categories populated
+            setTimeout(() => {
+                const categoryBtn = categoryButtons.querySelector(`button[data-value="${transaction.category}"]`);
+                if (categoryBtn) {
+                    categoryBtn.classList.add('active');
+                }
+            }, 50); // Small delay to ensure categories are rendered
+
+
+            // Show modal
+            modal.classList.remove('hidden');
+            modalContent.classList.remove('modal-leave', 'modal-leave-active');
+            modalContent.classList.add('modal-enter-active');
+        }
+
         // --- DATABASE & LOGIC FUNCTIONS ---
         function populateCategoryButtons(type, buttonContainer, wrapper) {
             buttonContainer.innerHTML = ''; 
@@ -1493,6 +1581,42 @@
                 updateDateDisplay(form.querySelector('#inline-transaction-date-display'), form.querySelector('#inline-transaction-date'), formDate);
                 handleTypeButtonClick(null, 'income', form.querySelector('#inline-transaction-type-buttons'), form.querySelector('#inline-transaction-category-buttons'), form.querySelector('#inline-category-wrapper'));
             }).catch(err => console.error("Write failed:", err));
+        }
+
+        function updateTransaction(e) {
+            e.preventDefault();
+            if (!editingTransactionId) return;
+
+            const form = document.getElementById('edit-transaction-form');
+            const type = form.querySelector('.type-btn.active')?.dataset.value;
+            const category = form.querySelector('.category-btn.active')?.dataset.value;
+
+            const updatedData = {
+                type: type,
+                description: form.querySelector('#edit-transaction-description').value,
+                amount: parseFloat(form.querySelector('#edit-transaction-amount').value),
+                category: type === 'savings' ? 'การออม' : category,
+                date: form.querySelector('#edit-transaction-date').value,
+                accountId: allTransactions[editingTransactionId].accountId // Keep the original accountId
+            };
+
+            if(!updatedData.type || !updatedData.description || !updatedData.amount || !updatedData.date) {
+                showConfirmationModal('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกข้อมูลที่จำเป็นทั้งหมด', null, 'info');
+                return;
+            }
+            if(updatedData.type !== 'savings' && !updatedData.category) {
+                showConfirmationModal('ข้อมูลไม่ครบถ้วน', 'กรุณาเลือกหมวดหมู่สำหรับรายการนี้', null, 'info');
+                return;
+            }
+
+            const transactionRef = ref(db, 'transactions/' + editingTransactionId);
+            update(transactionRef, updatedData).then(() => {
+                hideModal('edit-transaction-modal');
+                editingTransactionId = null;
+            }).catch(err => {
+                console.error("Update failed:", err);
+                showConfirmationModal('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกการเปลี่ยนแปลงได้', null, 'warning');
+            });
         }
         function deleteTransaction(id) { remove(ref(db, `transactions/${id}`)); }
         
@@ -1582,6 +1706,12 @@
         
         // --- EVENT HANDLERS ---
         function handleTransactionListClick(e) {
+            const editBtn = e.target.closest('.edit-btn');
+            if (editBtn) {
+                showEditTransactionModal(editBtn.dataset.id);
+                return;
+            }
+
             const deleteBtn = e.target.closest('.delete-btn');
             if (deleteBtn) {
                 showConfirmationModal('ยืนยันการลบ', 'คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?', () => {
@@ -1785,6 +1915,8 @@
             categoryDetailsModal = document.getElementById('category-details-modal');
             datePickerModal = document.getElementById('date-picker-modal');
             confirmationModal = document.getElementById('confirmation-modal');
+            editTransactionModal = document.getElementById('edit-transaction-modal');
+
 
             loadLayout();
             loadSummaryCardSettings();
@@ -1800,6 +1932,31 @@
 
             document.getElementById('close-daily-modal-btn').addEventListener('click', () => hideModal('daily-details-modal'));
             document.getElementById('close-category-modal-btn').addEventListener('click', () => hideModal('category-details-modal'));
+            
+            // Edit modal listeners
+            document.getElementById('close-edit-modal-btn').addEventListener('click', () => hideModal('edit-transaction-modal'));
+            document.getElementById('cancel-edit-btn').addEventListener('click', () => hideModal('edit-transaction-modal'));
+            document.getElementById('edit-transaction-form').addEventListener('submit', updateTransaction);
+            const editTypeButtons = document.getElementById('edit-transaction-type-buttons');
+            const editCategoryButtons = document.getElementById('edit-transaction-category-buttons');
+            const editCategoryWrapper = document.getElementById('edit-category-wrapper');
+            editTypeButtons.addEventListener('click', (e) => {
+                const button = e.target.closest('.type-btn');
+                if(button) handleTypeButtonClick(e, null, editTypeButtons, editCategoryButtons, editCategoryWrapper);
+            });
+            editCategoryButtons.addEventListener('click', (e) => {
+                const button = e.target.closest('.category-btn');
+                if (!button) return;
+                editCategoryButtons.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+            });
+             document.getElementById('edit-transaction-date-display').addEventListener('click', () => {
+                datePickerFor = 'edit-transaction';
+                datePickerDate = new Date(editFormDate);
+                showDatePickerModal();
+            });
+
+            // Date picker listeners
             document.getElementById('prev-datepicker-month').addEventListener('click', () => { datePickerDate.setMonth(datePickerDate.getMonth() - 1); renderDatePicker(); });
             document.getElementById('next-datepicker-month').addEventListener('click', () => { datePickerDate.setMonth(datePickerDate.getMonth() + 1); renderDatePicker(); });
             document.getElementById('datepicker-grid').addEventListener('click', (e) => { const dayBtn = e.target.closest('.datepicker-day'); if (dayBtn) { datePickerDate = new Date(datePickerDate.getFullYear(), datePickerDate.getMonth(), parseInt(dayBtn.dataset.day)); renderDatePicker(); } });
@@ -1819,6 +1976,13 @@
                     const accountDateInput = document.querySelector('#account-start-date');
                     if (accountDateDisplay && accountDateInput) {
                         updateDateDisplay(accountDateDisplay, accountDateInput, accountStartDate);
+                    }
+                } else if (datePickerFor === 'edit-transaction') {
+                    editFormDate = new Date(datePickerDate);
+                    const dateDisplay = document.getElementById('edit-transaction-date-display');
+                    const dateInput = document.getElementById('edit-transaction-date');
+                    if (dateDisplay && dateInput) {
+                        updateDateDisplay(dateDisplay, dateInput, editFormDate);
                     }
                 }
                 hideModal('date-picker-modal');
