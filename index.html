@@ -4,15 +4,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>แอปบันทึกรายรับ-รายจ่าย-ออม</title>
+    <title>แอปบันทึกรายรับ-รายจ่าย (Glass UI)</title>
     
     <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="icon" href="icon.png">
     
     <!-- Chart.js for charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <link rel="icon" href="icon.png">
     
     <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,7 +29,7 @@
               sans: ['Kanit', 'sans-serif'],
             },
             colors: {
-              // --- LIGHT THEME (DEFAULT) ---
+              // --- THEME COLORS (UPDATED FOR GLASSMORPHISM) ---
               border: 'hsl(var(--border))',
               input: 'hsl(var(--input))',
               ring: 'hsl(var(--ring))',
@@ -65,9 +65,10 @@
               },
             },
             borderRadius: {
-                lg: `0.75rem`,
-                md: `calc(0.75rem - 2px)`,
-                sm: `calc(0.75rem - 4px)`
+              lg: `1rem`,
+              xl: `1.25rem`,
+              '2xl': `1.5rem`,
+              '3xl': `2rem`,
             },
           },
         },
@@ -77,45 +78,45 @@
     <style>
       /* --- CSS VARIABLES FOR THEME COLORS --- */
       :root {
-        --background: 0 0% 100%; /* White */
-        --foreground: 222.2 47.4% 11.2%; /* Dark Slate */
-        --card: 0 0% 100%;
-        --card-foreground: 222.2 47.4% 11.2%;
+        --background: 220 20% 95%;
+        --foreground: 224 71% 4%;
+        --card: 0 0% 100% / 0.55; /* Increased opacity */
+        --card-foreground: 224 71% 4%;
         --popover: 0 0% 100%;
-        --popover-foreground: 222.2 47.4% 11.2%;
-        --primary: 221.2 83.2% 53.3%; /* Indigo */
-        --primary-foreground: 210 40% 98%;
-        --secondary: 210 40% 96.1%;
-        --secondary-foreground: 222.2 47.4% 11.2%;
-        --muted: 210 40% 96.1%;
-        --muted-foreground: 215.4 16.3% 46.9%;
-        --accent: 210 40% 96.1%;
-        --accent-foreground: 222.2 47.4% 11.2%;
-        --destructive: 0 100% 50%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 214.3 31.8% 91.4%;
-        --input: 214.3 31.8% 91.4%;
-        --ring: 222.2 47.4% 11.2%;
+        --popover-foreground: 224 71% 4%;
+        --primary: 262.1 83.3% 57.8%;
+        --primary-foreground: 210 20% 98%;
+        --secondary: 220 14.3% 95.9%;
+        --secondary-foreground: 220 8.9% 46.1%;
+        --muted: 220 14.3% 95.9%;
+        --muted-foreground: 220 9% 40%; /* Darker for better contrast */
+        --accent: 220 14.3% 95.9%;
+        --accent-foreground: 220 8.9% 46.1%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 20% 98%;
+        --border: 0 0% 100% / 0.5; /* Increased opacity */
+        --input: 220 13% 91%;
+        --ring: 262.1 83.3% 57.8%;
       }
  
       .dark {
-        --background: 224 71% 4%; /* Dark Blue */
-        --foreground: 213 31% 91%; /* Light Gray */
-        --card: 224 71% 4%;
-        --card-foreground: 213 31% 91%;
+        --background: 224 71% 4%;
+        --foreground: 210 20% 98%;
+        --card: 215 28% 17% / 0.55; /* Increased opacity */
+        --card-foreground: 210 20% 98%;
         --popover: 224 71% 4%;
-        --popover-foreground: 213 31% 91%;
-        --primary: 210 40% 98%;
-        --primary-foreground: 222.2 47.4% 11.2%;
+        --popover-foreground: 210 20% 98%;
+        --primary: 210 20% 98%;
+        --primary-foreground: 224 71% 4%;
         --secondary: 215 28% 17%;
-        --secondary-foreground: 210 40% 98%;
+        --secondary-foreground: 210 20% 98%;
         --muted: 215 28% 17%;
-        --muted-foreground: 215 20% 65%;
+        --muted-foreground: 215 20% 75%; /* Lighter for better contrast */
         --accent: 215 28% 17%;
-        --accent-foreground: 210 40% 98%;
-        --destructive: 0 63% 31%;
-        --destructive-foreground: 210 40% 98%;
-        --border: 215 28% 17%;
+        --accent-foreground: 210 20% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 20% 98%;
+        --border: 210 20% 98% / 0.5; /* Increased opacity */
         --input: 215 28% 17%;
         --ring: 216 34% 92%;
       }
@@ -124,68 +125,81 @@
         font-family: 'Kanit', sans-serif;
         background-color: hsl(var(--background));
         color: hsl(var(--foreground));
+        background-image: 
+          radial-gradient(at 27% 37%, hsla(215, 98%, 61%, 0.8) 0px, transparent 50%),
+          radial-gradient(at 97% 21%, hsla(125, 98%, 72%, 0.8) 0px, transparent 50%),
+          radial-gradient(at 52% 99%, hsla(355, 98%, 76%, 0.8) 0px, transparent 50%),
+          radial-gradient(at 10% 29%, hsla(256, 96%, 68%, 0.8) 0px, transparent 50%),
+          radial-gradient(at 97% 96%, hsla(38, 60%, 74%, 0.8) 0px, transparent 50%),
+          radial-gradient(at 33% 50%, hsla(222, 67%, 73%, 0.8) 0px, transparent 50%),
+          radial-gradient(at 79% 53%, hsla(343, 68%, 79%, 0.8) 0px, transparent 50%);
+        background-attachment: fixed;
       }
+      
+      .dark body {
+        background-image: 
+          radial-gradient(at 27% 37%, hsla(215, 98%, 61%, 0.3) 0px, transparent 50%),
+          radial-gradient(at 97% 21%, hsla(125, 98%, 72%, 0.3) 0px, transparent 50%),
+          radial-gradient(at 52% 99%, hsla(355, 98%, 76%, 0.3) 0px, transparent 50%),
+          radial-gradient(at 10% 29%, hsla(256, 96%, 68%, 0.3) 0px, transparent 50%),
+          radial-gradient(at 97% 96%, hsla(38, 60%, 74%, 0.3) 0px, transparent 50%),
+          radial-gradient(at 33% 50%, hsla(222, 67%, 73%, 0.3) 0px, transparent 50%),
+          radial-gradient(at 79% 53%, hsla(343, 68%, 79%, 0.3) 0px, transparent 50%);
+      }
+
+      .glass-card {
+        background-color: hsl(var(--card));
+        backdrop-filter: blur(20px) saturate(180%);
+        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        border: 1px solid hsl(var(--border));
+        border-radius: 1.5rem; /* rounded-2xl */
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+      }
+      
       .tab-button.active {
         background-color: hsl(var(--primary));
         color: hsl(var(--primary-foreground));
-        box-shadow: 0 4px 14px 0 rgb(0 0 0 / 10%);
       }
-      .dark .tab-button.active {
-         background-color: hsl(var(--primary));
-         color: hsl(var(--primary-foreground));
-         box-shadow: 0 4px 14px 0 rgb(0 0 0 / 20%);
-      }
-      .calendar-day.other-month {
-        background-color: hsl(var(--muted));
-      }
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      
+
       .modal-enter { opacity: 0; transform: scale(0.95); }
       .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 300ms, transform 300ms; }
       .modal-leave { opacity: 1; transform: scale(1); }
       .modal-leave-active { opacity: 0; transform: scale(0.95); transition: opacity 300ms, transform 300ms; }
       
-      .chart-container { max-height: 500px; transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out; overflow: hidden; position: relative; height: 16rem; }
-      @media (min-width: 768px) { .chart-container { height: 18rem; } }
-      #inline-form-content { transition: max-height 0.5s ease-in-out, opacity 0.3s ease-in-out, margin-top 0.5s ease-in-out; overflow: hidden; }
-      
-      .type-btn.active { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); box-shadow: 0 2px 8px 0 rgb(99 102 241 / 30%); }
-      .dark .type-btn.active { box-shadow: 0 2px 8px 0 rgb(200 200 255 / 15%); }
+      .type-btn.active { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
       .category-btn.active { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border-color: hsl(var(--primary)); }
       .category-filter-btn.active { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border-color: hsl(var(--primary)); }
 
-      .dot-container { display: none; position: absolute; bottom: 5px; left: 0; right: 0; justify-content: center; gap: 4px; }
-      .dot { width: 6px; height: 6px; border-radius: 50%; }
-      .dot-income { background-color: #22c55e; }
-      .dot-expense { background-color: #ef4444; }
-      .dot-savings { background-color: #3b82f6; }
-      @media (max-width: 767px) { .calendar-day .transaction-list-text { display: none; } .dot-container { display: flex; } .calendar-day { position: relative; } }
-      
       .datepicker-day.selected { background-color: hsl(var(--primary)) !important; color: hsl(var(--primary-foreground)) !important; }
       .datepicker-day.today { border: 2px solid hsl(var(--primary)); }
+
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="bg-background text-foreground">
 
     <!-- Header with Theme Toggle -->
-    <div class="fixed top-0 left-0 right-0 bg-background/70 dark:bg-background/80 backdrop-blur-lg border-b border-border z-20">
-        <div class="container mx-auto p-3 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">สมุดบัญชี</h1>
-            <div class="flex items-center gap-2">
-                <!-- THEME TOGGLE BUTTON -->
-                <button id="theme-toggle-btn" class="p-2 rounded-full hover:bg-muted active:bg-secondary transition-colors">
-                    <svg id="theme-toggle-light-icon" class="h-6 w-6 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                    <svg id="theme-toggle-dark-icon" class="h-6 w-6 text-foreground hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
-                </button>
-                 <button id="config-btn" class="p-2 rounded-full hover:bg-muted active:bg-secondary transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                </button>
+    <div class="fixed top-0 left-0 right-0 z-20">
+        <div class="container mx-auto p-3">
+            <div class="glass-card p-3 flex justify-between items-center gap-4">
+                <h1 id="header-title" class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-500 via-cyan-500 to-fuchsia-500 dark:from-fuchsia-400 dark:via-cyan-400 dark:to-fuchsia-400 truncate pl-2">
+                    FINANCE TRACKER
+                </h1>
+                <div class="flex items-center gap-1 flex-shrink-0">
+                    <button id="theme-toggle-btn" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 active:bg-black/20 dark:active:bg-white/20 transition-colors">
+                        <svg id="theme-toggle-light-icon" class="h-6 w-6 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                        <svg id="theme-toggle-dark-icon" class="h-6 w-6 text-foreground hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+                    </button>
+                     <button id="config-btn" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 active:bg-black/20 dark:active:bg-white/20 transition-colors">
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                     </button>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="container mx-auto p-4 max-w-5xl relative pt-20 pb-28">
+    <div class="container mx-auto p-4 max-w-7xl relative pt-24 pb-28">
         <!-- Main Content Area -->
         <main id="content-area">
             <!-- Views will be injected here -->
@@ -193,76 +207,43 @@
             <div id="weekly-view" class="view hidden"></div>
             <div id="calendar-view" class="view hidden"></div>
             <div id="summary-view" class="view hidden"></div>
-            <div id="config-view" class="view hidden">
-                 <div class="grid md:grid-cols-2 gap-6">
-                    <div class="bg-card p-6 rounded-2xl shadow-md dark:shadow-slate-900/50">
-                        <h3 class="text-xl font-semibold mb-4 text-card-foreground">หมวดหมู่รายรับ</h3>
-                        <div class="flex mb-4">
-                            <input type="text" id="new-income-category" class="flex-grow border border-input bg-background rounded-l-lg p-3 focus:ring-2 focus:ring-ring focus:outline-none transition" placeholder="ชื่อหมวดหมู่ใหม่">
-                            <button id="add-income-category-btn" class="bg-emerald-500 text-white px-5 rounded-r-lg hover:bg-emerald-600 transition-colors font-semibold">เพิ่ม</button>
-                        </div>
-                        <ul id="income-category-list" class="space-y-2"></ul>
-                    </div>
-                    <div class="bg-card p-6 rounded-2xl shadow-md dark:shadow-slate-900/50">
-                        <h3 class="text-xl font-semibold mb-4 text-card-foreground">หมวดหมู่รายจ่าย</h3>
-                        <div class="flex mb-4">
-                            <input type="text" id="new-expense-category" class="flex-grow border border-input bg-background rounded-l-lg p-3 focus:ring-2 focus:ring-ring focus:outline-none transition" placeholder="ชื่อหมวดหมู่ใหม่">
-                            <button id="add-expense-category-btn" class="bg-rose-500 text-white px-5 rounded-r-lg hover:bg-rose-600 transition-colors font-semibold">เพิ่ม</button>
-                        </div>
-                        <ul id="expense-category-list" class="space-y-2"></ul>
-                    </div>
-                    <div class="bg-card p-6 rounded-2xl shadow-md dark:shadow-slate-900/50 md:col-span-2">
-                        <h3 class="text-xl font-semibold mb-4 text-card-foreground">การตั้งค่าการแสดงผล</h3>
-                        <ul id="display-settings-list" class="space-y-4">
-                            <li class="flex justify-between items-center">
-                                <span class="font-medium text-foreground">แสดงกราฟรายรับ</span>
-                                <label for="toggle-income-chart-config" class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="toggle-income-chart-config" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-200 dark:bg-slate-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-500 dark:peer-focus:ring-blue-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 dark:peer-checked:bg-blue-500"></div>
-                                </label>
-                            </li>
-                            <li class="flex justify-between items-center">
-                                <span class="font-medium text-foreground">แสดงกราฟรายจ่าย</span>
-                                 <label for="toggle-expense-chart-config" class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" id="toggle-expense-chart-config" class="sr-only peer">
-                                    <div class="w-11 h-6 bg-gray-200 dark:bg-slate-600 rounded-full peer peer-focus:ring-2 peer-focus:ring-indigo-500 dark:peer-focus:ring-blue-400 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600 dark:peer-checked:bg-blue-500"></div>
-                                </label>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            <div id="account-view" class="view hidden"></div>
+            <div id="config-view" class="view hidden"></div>
         </main>
     </div>
     
     <!-- Bottom Navigation -->
-    <div class="fixed bottom-0 left-0 right-0 p-3">
-        <div class="flex justify-around items-center max-w-lg mx-auto p-1.5 bg-white/60 dark:bg-slate-800/60 backdrop-blur-lg rounded-full shadow-lg ring-1 ring-slate-900/5 dark:ring-white/10">
-            <button id="tab-tracker" class="tab-button flex flex-col items-center w-full py-2.5 px-2 text-muted-foreground rounded-full transition-all duration-300">
+    <div class="fixed bottom-0 left-0 right-0 p-3 z-20">
+        <div class="glass-card flex justify-around items-center max-w-lg mx-auto p-2 !rounded-full">
+            <button id="tab-tracker" class="tab-button flex flex-col items-center w-full py-2 px-2 text-muted-foreground rounded-full transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
-                <span class="text-xs font-medium">รายเดือน</span>
+                <span class="text-xs font-medium">แดชบอร์ด</span>
             </button>
-            <button id="tab-weekly" class="tab-button flex flex-col items-center w-full py-2.5 px-2 text-muted-foreground rounded-full transition-all duration-300">
+            <button id="tab-weekly" class="tab-button flex flex-col items-center w-full py-2 px-2 text-muted-foreground rounded-full transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" /></svg>
                 <span class="text-xs font-medium">รายสัปดาห์</span>
             </button>
-            <button id="tab-calendar" class="tab-button flex flex-col items-center w-full py-2.5 px-2 text-muted-foreground rounded-full transition-all duration-300">
+            <button id="tab-calendar" class="tab-button flex flex-col items-center w-full py-2 px-2 text-muted-foreground rounded-full transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 <span class="text-xs font-medium">ปฏิทิน</span>
             </button>
-            <button id="tab-summary" class="tab-button flex flex-col items-center w-full py-2.5 px-2 text-muted-foreground rounded-full transition-all duration-300">
+            <button id="tab-summary" class="tab-button flex flex-col items-center w-full py-2 px-2 text-muted-foreground rounded-full transition-all duration-300">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                 <span class="text-xs font-medium">สรุปรายปี</span>
+            </button>
+             <button id="tab-account" class="tab-button flex flex-col items-center w-full py-2 px-2 text-muted-foreground rounded-full transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>
+                <span class="text-xs font-medium">บัญชี</span>
             </button>
         </div>
     </div>
 
-    <!-- Daily Details Modal -->
-    <div id="daily-details-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-card p-6 sm:p-8 rounded-3xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col modal-enter border-t-4 border-muted">
+    <!-- Modals with Glass Effect -->
+    <div id="daily-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
+        <div class="glass-card p-6 sm:p-8 w-full max-w-lg max-h-[90vh] flex flex-col modal-enter !rounded-3xl">
             <div class="flex justify-between items-center mb-4">
-                <h2 id="daily-modal-title" class="text-2xl font-bold text-card-foreground">รายการ</h2>
-                <button id="close-daily-modal-btn" class="p-2 rounded-full hover:bg-muted">
+                <h2 id="daily-modal-title" class="text-2xl font-bold text-foreground">รายการ</h2>
+                <button id="close-daily-modal-btn" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
@@ -270,12 +251,11 @@
         </div>
     </div>
     
-    <!-- Category Details Modal -->
-    <div id="category-details-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-card p-6 sm:p-8 rounded-3xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col modal-enter">
+    <div id="category-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
+        <div class="glass-card p-6 sm:p-8 w-full max-w-2xl max-h-[90vh] flex flex-col modal-enter !rounded-3xl">
             <div class="flex justify-between items-center mb-2 flex-shrink-0">
-                <h2 id="category-modal-title" class="text-2xl font-bold text-card-foreground">รายการ</h2>
-                <button id="close-category-modal-btn" class="p-2 rounded-full hover:bg-muted">
+                <h2 id="category-modal-title" class="text-2xl font-bold text-foreground">รายการ</h2>
+                <button id="close-category-modal-btn" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
@@ -287,21 +267,39 @@
         </div>
     </div>
 
-    <!-- Custom Date Picker Modal -->
-    <div id="date-picker-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-card p-5 rounded-3xl shadow-2xl w-full max-w-sm modal-enter">
+    <div id="date-picker-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
+        <div class="glass-card p-5 w-full max-w-sm modal-enter !rounded-3xl">
             <div id="date-picker-header" class="flex justify-between items-center mb-4">
-                <button id="prev-datepicker-month" class="p-2 rounded-full hover:bg-muted active:bg-secondary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                <div id="datepicker-month-year" class="font-bold text-lg text-card-foreground"></div>
-                <button id="next-datepicker-month" class="p-2 rounded-full hover:bg-muted active:bg-secondary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                <button id="prev-datepicker-month" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                <div id="datepicker-month-year" class="font-bold text-lg text-foreground"></div>
+                <button id="next-datepicker-month" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
             </div>
             <div id="datepicker-grid" class="grid grid-cols-7 gap-1 text-center"></div>
             <div class="flex justify-between items-center mt-4 pt-4 border-t border-border">
-                <button id="today-btn" class="text-primary font-semibold px-4 py-2 rounded-lg hover:bg-accent transition-colors">วันนี้</button>
+                <button id="today-btn" class="text-primary font-semibold px-4 py-2 rounded-xl hover:bg-primary/10 transition-colors">วันนี้</button>
                 <div>
-                    <button id="cancel-date-btn" class="text-foreground font-semibold px-4 py-2 rounded-lg hover:bg-accent transition-colors mr-2">ยกเลิก</button>
-                    <button id="confirm-date-btn" class="bg-primary text-primary-foreground font-semibold px-4 py-2 rounded-lg hover:opacity-90 transition-colors">ตกลง</button>
+                    <button id="cancel-date-btn" class="text-foreground font-semibold px-4 py-2 rounded-xl hover:bg-black/10 dark:hover:bg-white/10 transition-colors mr-2">ยกเลิก</button>
+                    <button id="confirm-date-btn" class="bg-primary text-primary-foreground font-semibold px-4 py-2 rounded-xl hover:opacity-90 transition-colors">ตกลง</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="confirmation-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
+        <div class="glass-card p-6 sm:p-8 w-full max-w-md modal-enter text-center !rounded-3xl">
+            <div id="confirmation-modal-icon-wrapper" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-rose-500/20 mb-4">
+                 <svg id="confirmation-modal-icon-warning" class="h-8 w-8 text-rose-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126z" />
+                </svg>
+                <svg id="confirmation-modal-icon-info" class="h-8 w-8 text-blue-500 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h2 id="confirmation-modal-title" class="text-2xl font-bold text-foreground">ยืนยันการกระทำ</h2>
+            <p id="confirmation-modal-message" class="text-muted-foreground mt-2 mb-6"></p>
+            <div class="flex justify-center gap-4">
+                <button id="cancel-confirmation-btn" class="w-full px-6 py-3 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 transition-colors font-semibold">ยกเลิก</button>
+                <button id="confirm-confirmation-btn" class="w-full px-6 py-3 rounded-xl bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity font-semibold">ยืนยัน</button>
             </div>
         </div>
     </div>
@@ -330,23 +328,44 @@
 
         // --- STATE MANAGEMENT ---
         let currentView = 'tracker';
+        let previousView = 'tracker'; 
         let currentDate = new Date();
         let currentWeekDate = new Date();
         let currentCalendarDate = new Date();
         let currentYear = new Date().getFullYear();
         let formDate = new Date();
+        let accountStartDate = new Date();
         let datePickerDate = new Date();
+        let datePickerFor = null;
         let allTransactions = {};
         let incomeCategories = {};
         let expenseCategories = {};
+        let allAccounts = {}; 
+        let selectedAccountId = localStorage.getItem('selectedAccountId') || null;
         let incomeChart = null;
         let expenseChart = null;
-        let isTransactionFormVisible = true;
         let currentModalTransactions = [];
         let currentModalType = '';
+        let confirmAction = null; 
+        let isAddAccountFormVisible = true;
+        
+        let dashboardWidgets = {
+            summary: { name: 'สรุปยอด', visible: true, template: getSummaryWidgetTemplate },
+            categorySummary: { name: 'สรุปตามหมวดหมู่', visible: true, template: getCategorySummaryWidgetTemplate },
+            form: { name: 'เพิ่มรายการ', visible: true, template: getFormWidgetTemplate },
+            charts: { name: 'กราฟ', visible: true, template: getChartsWidgetTemplate },
+            list: { name: 'รายการล่าสุด', visible: true, template: getListWidgetTemplate }
+        };
+
+        let summaryCardSettings = {
+            income: { name: 'รายรับ', visible: true },
+            expense: { name: 'รายจ่าย', visible: true },
+            savings: { name: 'ออม', visible: true },
+            balance: { name: 'คงเหลือ', visible: true }
+        };
 
         // --- DOM ELEMENTS ---
-        let views, tabButtons, dailyDetailsModal, configButton, categoryDetailsModal, datePickerModal;
+        let views, tabButtons, dailyDetailsModal, configButton, categoryDetailsModal, datePickerModal, confirmationModal;
 
         // --- HELPER FUNCTIONS ---
         const formatCurrency = (amount) => `฿${parseFloat(amount || 0).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
@@ -374,8 +393,215 @@
         const getChartVisibility = (type) => localStorage.getItem(`show${type}Chart`) === null ? true : localStorage.getItem(`show${type}Chart`) === 'true';
         const setChartVisibility = (type, isVisible) => localStorage.setItem(`show${type}Chart`, isVisible);
 
+
+        // --- LAYOUT & SETTINGS MANAGEMENT ---
+        function loadLayout() {
+            const savedLayout = localStorage.getItem('dashboardLayout');
+            if (savedLayout) {
+                try {
+                    const parsedLayout = JSON.parse(savedLayout);
+                    const newOrderedWidgets = {};
+                    Object.keys(parsedLayout).forEach(key => {
+                        if (dashboardWidgets[key]) {
+                            newOrderedWidgets[key] = { ...dashboardWidgets[key], ...parsedLayout[key] };
+                        }
+                    });
+                    Object.keys(dashboardWidgets).forEach(key => {
+                        if (!newOrderedWidgets[key]) {
+                            newOrderedWidgets[key] = dashboardWidgets[key];
+                        }
+                    });
+                    dashboardWidgets = newOrderedWidgets;
+                } catch (e) {
+                    console.error("Failed to parse layout from localStorage", e);
+                }
+            }
+        }
+
+        function saveLayout() {
+            localStorage.setItem('dashboardLayout', JSON.stringify(dashboardWidgets));
+        }
+
+        function loadSummaryCardSettings() {
+            const savedSettings = localStorage.getItem('summaryCardSettings');
+            if (savedSettings) {
+                try {
+                    const parsedSettings = JSON.parse(savedSettings);
+                    Object.keys(summaryCardSettings).forEach(key => {
+                        if (parsedSettings[key] !== undefined) {
+                            summaryCardSettings[key].visible = parsedSettings[key].visible;
+                        }
+                    });
+                } catch (e) {
+                    console.error("Failed to parse summary card settings from localStorage", e);
+                }
+            }
+        }
+
+        function saveSummaryCardSettings() {
+            localStorage.setItem('summaryCardSettings', JSON.stringify(summaryCardSettings));
+        }
+
+        function loadAccountFormVisibility() {
+            const savedState = localStorage.getItem('isAddAccountFormVisible');
+            isAddAccountFormVisible = savedState === null ? true : savedState === 'true';
+        }
+
+        // --- TEMPLATE GENERATORS FOR WIDGETS ---
+        function getSummaryWidgetTemplate() {
+            const cardDetails = {
+                income: { id: 'total-income', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg>`, color: 'emerald', isClickable: true },
+                expense: { id: 'total-expense', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>`, color: 'rose', isClickable: true },
+                savings: { id: 'total-savings', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>`, color: 'blue', isClickable: true },
+                balance: { id: 'balance', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg>`, color: 'violet', isClickable: false }
+            };
+
+            let cardsHtml = '';
+            let visibleCount = 0;
+            Object.keys(summaryCardSettings).forEach(key => {
+                const setting = summaryCardSettings[key];
+                if (setting.visible) {
+                    visibleCount++;
+                    const details = cardDetails[key];
+                    const clickableClasses = details.isClickable ? 'cursor-pointer hover:bg-white/20 dark:hover:bg-white/5 transition-all' : '';
+                    cardsHtml += `
+                        <div data-type="${key}" class="glass-card p-4 ${clickableClasses}">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 flex items-center justify-center rounded-2xl bg-${details.color}-500/20 text-${details.color}-600 dark:text-${details.color}-400">${details.icon}</div>
+                                <p class="text-sm text-muted-foreground font-medium">${setting.name}</p>
+                            </div>
+                            <p id="${details.id}" class="text-2xl font-bold text-${details.color}-600 dark:text-${details.color}-400 mt-2">฿0.00</p>
+                        </div>
+                    `;
+                }
+            });
+
+            if (visibleCount === 0) {
+                return `
+                    <div id="summary-widget" class="dashboard-widget md:col-span-2">
+                        <div class="glass-card p-4 text-center text-muted-foreground">
+                            การ์ดสรุปยอดถูกปิดไว้ทั้งหมด ไปที่หน้าตั้งค่าเพื่อเปิดใช้งาน
+                        </div>
+                    </div>
+                `;
+            }
+            
+            let gridClass = '';
+            switch (visibleCount) {
+                case 1:
+                    gridClass = 'grid-cols-1';
+                    break;
+                case 2:
+                    gridClass = 'grid-cols-2';
+                    break;
+                case 3:
+                    gridClass = 'grid-cols-2 md:grid-cols-3';
+                    break;
+                case 4:
+                default:
+                    gridClass = 'grid-cols-2 md:grid-cols-4';
+                    break;
+            }
+
+            return `
+                <div id="summary-widget" class="dashboard-widget md:col-span-2">
+                    <div class="grid ${gridClass} gap-4 text-left">
+                        ${cardsHtml}
+                    </div>
+                </div>
+            `;
+        }
+
+        function getCategorySummaryWidgetTemplate() {
+            return `
+                <div id="category-summary-widget" class="dashboard-widget md:col-span-2 glass-card p-6">
+                    <h3 class="text-xl font-semibold text-foreground mb-4">สรุปตามหมวดหมู่</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                        <div>
+                            <h4 class="font-semibold text-emerald-600 dark:text-emerald-400 mb-2 border-b-2 border-emerald-500/20 pb-1">รายรับ</h4>
+                            <div id="income-category-summary-list" class="space-y-1.5 text-sm"></div>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-rose-600 dark:text-rose-400 mb-2 border-b-2 border-rose-500/20 pb-1">รายจ่าย</h4>
+                            <div id="expense-category-summary-list" class="space-y-1.5 text-sm"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getFormWidgetTemplate() {
+            return `
+                <div id="form-widget" class="dashboard-widget glass-card p-4 sm:p-6 md:col-span-2">
+                    <h3 class="text-xl font-semibold text-foreground mb-4">เพิ่มรายการใหม่</h3>
+                    <form id="inline-transaction-form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-muted-foreground mb-2 text-sm font-medium">ประเภท</label>
+                                <div id="inline-transaction-type-buttons" class="grid grid-cols-3 gap-1 rounded-xl bg-black/10 dark:bg-white/10 p-1">
+                                    <button type="button" data-value="income" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">รายรับ</button>
+                                    <button type="button" data-value="expense" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">รายจ่าย</button>
+                                    <button type="button" data-value="savings" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">ออม</button>
+                                </div>
+                            </div>
+                            <div>
+                                 <label for="inline-transaction-description" class="block text-muted-foreground mb-2 text-sm font-medium">คำอธิบาย</label>
+                                 <input type="text" id="inline-transaction-description" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required>
+                            </div>
+                            <div>
+                                <label for="inline-transaction-amount" class="block text-muted-foreground mb-2 text-sm font-medium">จำนวนเงิน</label>
+                                <input type="number" id="inline-transaction-amount" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required min="0" step="0.01">
+                            </div>
+                            <div>
+                                <label for="inline-transaction-date-display" class="block text-muted-foreground mb-2 text-sm font-medium">วันที่</label>
+                                <input type="text" id="inline-transaction-date-display" readonly class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition cursor-pointer" required>
+                                <input type="hidden" id="inline-transaction-date">
+                            </div>
+                            <div id="inline-category-wrapper" class="md:col-span-2">
+                                 <label class="block text-muted-foreground mb-2 text-sm font-medium">หมวดหมู่</label>
+                                 <div id="inline-transaction-category-buttons" class="flex flex-wrap gap-2"></div>
+                            </div>
+                        </div>
+                         <button type="submit" id="add-transaction-btn" class="w-full mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:opacity-90 font-semibold transition-opacity flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                            <span>บันทึกรายการ</span>
+                        </button>
+                        <p id="form-account-warning" class="text-center text-rose-400 text-sm mt-2 hidden"></p>
+                    </form>
+                </div>
+            `;
+        }
+        
+        function getChartsWidgetTemplate() {
+            return `
+                <div id="charts-widget" class="dashboard-widget grid md:grid-cols-2 gap-6 md:col-span-2">
+                    <div id="income-chart-card" class="glass-card p-6 flex flex-col">
+                        <h3 class="text-xl font-semibold text-foreground mb-4">สัดส่วนรายรับ</h3>
+                        <div class="relative h-64"><canvas id="income-chart"></canvas></div>
+                    </div>
+                    <div id="expense-chart-card" class="glass-card p-6 flex flex-col">
+                        <h3 class="text-xl font-semibold text-foreground mb-4">สัดส่วนรายจ่าย</h3>
+                        <div class="relative h-64"><canvas id="expense-chart"></canvas></div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getListWidgetTemplate() {
+            return `
+                <div id="list-widget" class="dashboard-widget glass-card p-6 md:col-span-2">
+                    <h3 class="text-xl font-semibold text-foreground mb-4">รายการล่าสุด</h3>
+                    <div id="transaction-list" class="space-y-3"></div>
+                </div>
+            `;
+        }
+        
         // --- VIEW RENDERING ---
         function switchView(viewName) {
+            if (viewName !== 'config') {
+                previousView = currentView;
+                localStorage.setItem('lastView', viewName); // Save the last view
+            }
             currentView = viewName;
             views.forEach(v => v.classList.add('hidden'));
             const viewToShow = document.getElementById(`${viewName}-view`);
@@ -390,205 +616,207 @@
         }
 
         function renderCurrentView() {
+            const headerTitle = document.getElementById('header-title');
+            if (selectedAccountId && allAccounts[selectedAccountId]) {
+                headerTitle.textContent = allAccounts[selectedAccountId].accountName;
+            } else if (Object.keys(allAccounts).length > 0) {
+                headerTitle.textContent = 'เลือกบัญชี...';
+            } else {
+                headerTitle.textContent = 'FINANCE TRACKER';
+            }
+
             switch (currentView) {
-                case 'tracker': renderTrackerView(); break;
-                case 'weekly': renderWeeklyView(); break;
+                case 'tracker': renderDashboardView('tracker-view'); break;
+                case 'weekly': renderDashboardView('weekly-view', true); break;
                 case 'calendar': renderCalendarView(); break;
                 case 'summary': renderSummaryView(); break;
+                case 'account': renderAccountView(); break;
                 case 'config': renderConfigView(); break;
             }
         }
         
-        // --- TEMPLATE GENERATORS ---
-        function getTrackerTemplate() {
-            return `
-                <div class="mb-6">
-                    <div class="flex items-center justify-between mb-4">
-                        <h2 id="current-month-year" class="text-2xl font-bold text-foreground"></h2>
-                        <div class="flex items-center gap-1">
-                           <button id="prev-month" class="p-2 rounded-full hover:bg-muted active:bg-secondary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                           <button id="next-month" class="p-2 rounded-full hover:bg-muted active:bg-secondary transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
-                        </div>
-                    </div>
-                    <div id="summary-cards-container" class="grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
-                        <div data-type="income" class="bg-card p-4 rounded-2xl shadow-md dark:shadow-slate-900/50 cursor-pointer hover:shadow-lg transition-shadow"><div class="flex items-center gap-3"><div class="w-10 h-10 flex items-center justify-center rounded-full bg-emerald-500/10 text-emerald-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01" /></svg></div><p class="text-sm text-muted-foreground font-medium">รายรับ</p></div><p id="total-income" class="text-2xl font-bold text-emerald-500 mt-2">฿0.00</p></div>
-                        <div data-type="expense" class="bg-card p-4 rounded-2xl shadow-md dark:shadow-slate-900/50 cursor-pointer hover:shadow-lg transition-shadow"><div class="flex items-center gap-3"><div class="w-10 h-10 flex items-center justify-center rounded-full bg-rose-500/10 text-rose-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg></div><p class="text-sm text-muted-foreground font-medium">รายจ่าย</p></div><p id="total-expense" class="text-2xl font-bold text-rose-500 mt-2">฿0.00</p></div>
-                        <div data-type="savings" class="bg-card p-4 rounded-2xl shadow-md dark:shadow-slate-900/50 cursor-pointer hover:shadow-lg transition-shadow"><div class="flex items-center gap-3"><div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500/10 text-blue-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg></div><p class="text-sm text-muted-foreground font-medium">ออม</p></div><p id="total-savings" class="text-2xl font-bold text-blue-500 mt-2">฿0.00</p></div>
-                        <div class="bg-card p-4 rounded-2xl shadow-md dark:shadow-slate-900/50"><div class="flex items-center gap-3"><div class="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-500/10 text-indigo-500"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" /></svg></div><p class="text-sm text-muted-foreground font-medium">คงเหลือ</p></div><p id="balance" class="text-2xl font-bold text-indigo-500 mt-2">฿0.00</p></div>
+        function renderDashboardView(viewId, isWeekly = false) {
+            const view = document.getElementById(viewId);
+            const dateForPeriod = isWeekly ? currentWeekDate : currentDate;
+            
+            let headerHtml = `
+            <div class="max-w-6xl mx-auto">
+                <div class="flex items-center justify-between mb-4 px-2">
+                    <h2 id="current-month-year" class="text-2xl font-bold text-foreground"></h2>
+                    <div class="flex items-center gap-1">
+                        <button id="prev-period" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                        <button id="next-period" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
                     </div>
                 </div>
-                
-                <div class="bg-card p-4 sm:p-6 rounded-2xl shadow-md dark:shadow-slate-900/50 mb-6">
-                    <div id="inline-form-toggle" class="flex justify-between items-center cursor-pointer">
-                        <h3 class="text-xl font-semibold text-card-foreground">เพิ่มรายการใหม่</h3>
-                        <svg id="inline-form-chevron" class="w-6 h-6 transition-transform duration-300 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                    </div>
-                    <form id="inline-transaction-form">
-                        <div id="inline-form-content">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="block text-foreground mb-2 text-sm font-medium">ประเภท</label>
-                                    <div id="inline-transaction-type-buttons" class="grid grid-cols-3 gap-2 rounded-full bg-muted p-1.5">
-                                        <button type="button" data-value="income" class="type-btn py-2 px-4 text-sm font-medium rounded-full transition-all text-muted-foreground">รายรับ</button>
-                                        <button type="button" data-value="expense" class="type-btn py-2 px-4 text-sm font-medium rounded-full transition-all text-muted-foreground">รายจ่าย</button>
-                                        <button type="button" data-value="savings" class="type-btn py-2 px-4 text-sm font-medium rounded-full transition-all text-muted-foreground">ออม</button>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label for="inline-transaction-date-display" class="block text-foreground mb-2 text-sm font-medium">วันที่</label>
-                                    <input type="text" id="inline-transaction-date-display" readonly class="w-full p-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:outline-none transition bg-background cursor-pointer" required>
-                                    <input type="hidden" id="inline-transaction-date">
-                                </div>
-                                <div class="md:col-span-2">
-                                     <label for="inline-transaction-description" class="block text-foreground mb-2 text-sm font-medium">คำอธิบาย</label>
-                                     <input type="text" id="inline-transaction-description" class="w-full p-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:outline-none transition bg-background" required>
-                                </div>
-                                <div>
-                                    <label for="inline-transaction-amount" class="block text-foreground mb-2 text-sm font-medium">จำนวนเงิน</label>
-                                    <input type="number" id="inline-transaction-amount" class="w-full p-3 border border-input rounded-lg focus:ring-2 focus:ring-ring focus:outline-none transition bg-background" required min="0" step="0.01">
-                                </div>
-                                <div id="inline-category-wrapper">
-                                     <label class="block text-foreground mb-2 text-sm font-medium">หมวดหมู่</label>
-                                     <div id="inline-transaction-category-buttons" class="flex flex-wrap gap-2"></div>
-                                </div>
-                            </div>
-                             <button type="submit" class="w-full mt-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-6 py-3 rounded-lg hover:opacity-90 font-semibold transition-opacity flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/30 dark:shadow-indigo-500/10">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
-                                <span>บันทึกรายการ</span>
-                            </button>
-                        </div>
-                    </form>
+                <div id="dashboard-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 </div>
-
-                <div id="charts-grid" class="grid md:grid-cols-2 gap-6 mb-6">
-                    <div id="income-chart-card" class="bg-card p-6 rounded-2xl shadow-md dark:shadow-slate-900/50 flex flex-col">
-                        <h3 class="text-xl font-semibold text-card-foreground mb-4">สัดส่วนรายรับ</h3>
-                        <div id="income-chart-container" class="chart-container flex-grow"><canvas id="income-chart"></canvas></div>
-                    </div>
-                    <div id="expense-chart-card" class="bg-card p-6 rounded-2xl shadow-md dark:shadow-slate-900/50 flex flex-col">
-                        <h3 class="text-xl font-semibold text-card-foreground mb-4">สัดส่วนรายจ่าย</h3>
-                        <div id="expense-chart-container" class="chart-container flex-grow"><canvas id="expense-chart"></canvas></div>
-                    </div>
-                </div>
-                <div id="category-summary-container" class="mb-6"></div>
-                <div class="bg-card p-6 rounded-2xl shadow-md dark:shadow-slate-900/50">
-                    <h3 class="text-xl font-semibold text-card-foreground mb-4">รายการล่าสุด</h3>
-                    <div id="transaction-list" class="space-y-3"></div>
-                </div>
+            </div>
             `;
-        }
-        
-        // --- RENDER VIEWS ---
-        function renderTrackerView(isWeekly = false, dateForWeek = new Date()) {
-            const targetViewId = isWeekly ? 'weekly-view' : 'tracker-view';
-            const view = document.getElementById(targetViewId);
-            view.innerHTML = getTrackerTemplate();
-            
-            setupInlineForm(view);
-            view.querySelector('#transaction-list').addEventListener('click', handleTransactionListClick);
-            view.querySelector('#summary-cards-container').addEventListener('click', handleSummaryCardClick);
-            
+            view.innerHTML = headerHtml;
+
+            const dashboardGrid = view.querySelector('#dashboard-grid');
+            Object.keys(dashboardWidgets).forEach(key => {
+                const widget = dashboardWidgets[key];
+                if (widget.visible) {
+                    const widgetHtml = widget.template();
+                    dashboardGrid.innerHTML += widgetHtml;
+                }
+            });
+
+            const filteredTransactions = selectedAccountId
+                ? Object.entries(allTransactions)
+                    .filter(([id, t]) => t.accountId === selectedAccountId)
+                    .map(([id, t]) => ({ id, ...t }))
+                : [];
+
             let transactions, title;
             if (isWeekly) {
-                const startOfWeek = new Date(dateForWeek);
+                const startOfWeek = new Date(dateForPeriod);
                 startOfWeek.setHours(0, 0, 0, 0);
                 startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
                 const endOfWeek = new Date(startOfWeek);
                 endOfWeek.setDate(endOfWeek.getDate() + 6);
                 endOfWeek.setHours(23, 59, 59, 999);
-                transactions = Object.entries(allTransactions).filter(([id, t]) => {
+                transactions = filteredTransactions.filter(t => {
                     const tDate = new Date(t.date + 'T00:00:00');
                     return tDate >= startOfWeek && tDate <= endOfWeek;
-                }).map(([id, t]) => ({ id, ...t }));
+                });
                 title = `สัปดาห์: ${formatShortThaiDate(startOfWeek)} - ${formatShortThaiDate(endOfWeek)}`;
-                view.querySelector('#prev-month').addEventListener('click', () => { currentWeekDate.setDate(currentWeekDate.getDate() - 7); renderWeeklyView(); });
-                view.querySelector('#next-month').addEventListener('click', () => { currentWeekDate.setDate(currentWeekDate.getDate() + 7); renderWeeklyView(); });
+                view.querySelector('#prev-period').addEventListener('click', () => { currentWeekDate.setDate(currentWeekDate.getDate() - 7); renderDashboardView('weekly-view', true); });
+                view.querySelector('#next-period').addEventListener('click', () => { currentWeekDate.setDate(currentWeekDate.getDate() + 7); renderDashboardView('weekly-view', true); });
             } else {
-                const year = currentDate.getFullYear();
-                const month = currentDate.getMonth();
+                const year = dateForPeriod.getFullYear();
+                const month = dateForPeriod.getMonth();
                 const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
-                transactions = Object.entries(allTransactions).filter(([id, t]) => t.date && t.date.startsWith(monthStr)).map(([id, t]) => ({ id, ...t }));
+                transactions = filteredTransactions.filter(t => t.date && t.date.startsWith(monthStr));
                 title = `${getThaiMonthName(month)} ${year + 543}`;
-                view.querySelector('#prev-month').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderTrackerView(); });
-                view.querySelector('#next-month').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderTrackerView(); });
+                view.querySelector('#prev-period').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() - 1); renderDashboardView('tracker-view'); });
+                view.querySelector('#next-period').addEventListener('click', () => { currentDate.setMonth(currentDate.getMonth() + 1); renderDashboardView('tracker-view'); });
             }
             
             view.querySelector('#current-month-year').textContent = title;
 
-            let totalIncome = 0, totalExpense = 0, totalSavings = 0;
-            const incomeData = {}, expenseData = {};
-            const transactionListEl = view.querySelector('#transaction-list');
-            transactionListEl.innerHTML = '';
-
-            if (transactions.length === 0) {
-                transactionListEl.innerHTML = `<p class="text-center text-muted-foreground py-6">ยังไม่มีรายการ</p>`;
-            } else {
-                const groupedTransactions = transactions.reduce((acc, t) => {
-                    const date = t.date;
-                    if (!acc[date]) acc[date] = [];
-                    acc[date].push(t);
-                    return acc;
-                }, {});
-
-                const sortedDates = Object.keys(groupedTransactions).sort((a, b) => new Date(b) - new Date(a));
-
-                sortedDates.forEach(date => {
-                    const dateHeader = document.createElement('div');
-                    dateHeader.className = 'pt-4 pb-2';
-                    dateHeader.innerHTML = `<h4 class="font-semibold text-muted-foreground">${formatDateHeader(date)}</h4>`;
-                    transactionListEl.appendChild(dateHeader);
-
-                    const dailyTransactions = groupedTransactions[date];
-                    dailyTransactions.sort((a, b) => b.id.localeCompare(a.id));
-                    dailyTransactions.forEach(t => {
-                        if (t.type === 'income') {
-                            totalIncome += t.amount;
-                            incomeData[t.category] = (incomeData[t.category] || 0) + t.amount;
-                        } else if (t.type === 'expense') {
-                            totalExpense += t.amount;
-                            expenseData[t.category] = (expenseData[t.category] || 0) + t.amount;
-                        } else if (t.type === 'savings') {
-                            totalSavings += t.amount;
-                        }
-                        renderTransactionItem(t, transactionListEl);
-                    });
+            if (dashboardWidgets.summary.visible) {
+                let totalIncome = 0, totalExpense = 0, totalSavings = 0;
+                transactions.forEach(t => {
+                    if (t.type === 'income') totalIncome += t.amount;
+                    else if (t.type === 'expense') totalExpense += t.amount;
+                    else if (t.type === 'savings') totalSavings += t.amount;
                 });
+
+                const totalIncomeEl = view.querySelector('#total-income');
+                if (totalIncomeEl) totalIncomeEl.textContent = formatCurrency(totalIncome);
+                
+                const totalExpenseEl = view.querySelector('#total-expense');
+                if (totalExpenseEl) totalExpenseEl.textContent = formatCurrency(totalExpense);
+                
+                const totalSavingsEl = view.querySelector('#total-savings');
+                if (totalSavingsEl) totalSavingsEl.textContent = formatCurrency(totalSavings);
+                
+                const balanceEl = view.querySelector('#balance');
+                if (balanceEl) balanceEl.textContent = formatCurrency(totalIncome - totalExpense - totalSavings);
+                
+                const summaryWidgetEl = view.querySelector('#summary-widget');
+                if (summaryWidgetEl) summaryWidgetEl.addEventListener('click', handleSummaryCardClick);
             }
 
-            view.querySelector('#total-income').textContent = formatCurrency(totalIncome);
-            view.querySelector('#total-expense').textContent = formatCurrency(totalExpense);
-            view.querySelector('#total-savings').textContent = formatCurrency(totalSavings);
-            const balance = totalIncome - totalExpense - totalSavings;
-            view.querySelector('#balance').textContent = formatCurrency(balance);
-            
-            const categorySummaryEl = view.querySelector('#category-summary-container');
-            if (categorySummaryEl) {
-                let summaryHtml = '<div class="bg-card p-6 rounded-2xl shadow-md dark:shadow-slate-900/50">';
-                summaryHtml += `<h3 class="text-xl font-semibold mb-4 text-card-foreground">สรุปตามหมวดหมู่</h3>`;
-                summaryHtml += '<div class="grid md:grid-cols-2 gap-x-8 gap-y-4">';
-                summaryHtml += '<div><h4 class="font-semibold text-emerald-600 dark:text-emerald-500 mb-2 border-b border-border pb-1">รายรับ</h4><ul class="space-y-1.5 mt-2">';
-                if (Object.keys(incomeData).length > 0) Object.entries(incomeData).forEach(([category, amount]) => { summaryHtml += `<li class="flex justify-between text-sm text-muted-foreground"><span>${category}</span><span class="font-medium text-foreground">${formatCurrency(amount)}</span></li>`; }); else summaryHtml += '<li class="text-sm text-muted-foreground">ไม่มีรายรับ</li>';
-                summaryHtml += '</ul></div>';
-                summaryHtml += '<div><h4 class="font-semibold text-rose-600 dark:text-rose-500 mb-2 border-b border-border pb-1">รายจ่าย</h4><ul class="space-y-1.5 mt-2">';
-                if (Object.keys(expenseData).length > 0) Object.entries(expenseData).forEach(([category, amount]) => { summaryHtml += `<li class="flex justify-between text-sm text-muted-foreground"><span>${category}</span><span class="font-medium text-foreground">${formatCurrency(amount)}</span></li>`; }); else summaryHtml += '<li class="text-sm text-muted-foreground">ไม่มีรายจ่าย</li>';
-                summaryHtml += '</ul></div>';
-                summaryHtml += '</div></div>';
-                categorySummaryEl.innerHTML = summaryHtml;
+            if (dashboardWidgets.categorySummary.visible) {
+                const incomeCategoryTotals = {};
+                const expenseCategoryTotals = {};
+
+                transactions.forEach(t => {
+                    if (t.type === 'income') {
+                        incomeCategoryTotals[t.category] = (incomeCategoryTotals[t.category] || 0) + t.amount;
+                    } else if (t.type === 'expense') {
+                        expenseCategoryTotals[t.category] = (expenseCategoryTotals[t.category] || 0) + t.amount;
+                    }
+                });
+
+                const incomeListEl = view.querySelector('#income-category-summary-list');
+                const expenseListEl = view.querySelector('#expense-category-summary-list');
+
+                if (incomeListEl) {
+                    incomeListEl.innerHTML = '';
+                    if (Object.keys(incomeCategoryTotals).length > 0) {
+                        Object.entries(incomeCategoryTotals).sort((a,b) => b[1] - a[1]).forEach(([category, total]) => {
+                            incomeListEl.innerHTML += `
+                                <div class="category-summary-item flex justify-between items-center cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 p-1.5 rounded-lg transition-colors" data-type="income" data-category="${category}">
+                                    <span class="text-foreground truncate pr-2">${category}</span>
+                                    <span class="font-semibold text-emerald-500 flex-shrink-0">${formatCurrency(total)}</span>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        incomeListEl.innerHTML = '<p class="text-muted-foreground text-xs py-2">ไม่มีรายการ</p>';
+                    }
+                }
+
+                if (expenseListEl) {
+                    expenseListEl.innerHTML = '';
+                    if (Object.keys(expenseCategoryTotals).length > 0) {
+                        Object.entries(expenseCategoryTotals).sort((a,b) => b[1] - a[1]).forEach(([category, total]) => {
+                            expenseListEl.innerHTML += `
+                                <div class="category-summary-item flex justify-between items-center cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 p-1.5 rounded-lg transition-colors" data-type="expense" data-category="${category}">
+                                    <span class="text-foreground truncate pr-2">${category}</span>
+                                    <span class="font-semibold text-rose-500 flex-shrink-0">${formatCurrency(total)}</span>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        expenseListEl.innerHTML = '<p class="text-muted-foreground text-xs py-2">ไม่มีรายการ</p>';
+                    }
+                }
             }
-            
-            const showIncomeChart = getChartVisibility('Income');
-            const showExpenseChart = getChartVisibility('Expense');
-            const incomeChartCard = view.querySelector('#income-chart-card');
-            const expenseChartCard = view.querySelector('#expense-chart-card');
-            const chartsGrid = view.querySelector('#charts-grid');
-            if (incomeChartCard) incomeChartCard.classList.toggle('hidden', !showIncomeChart);
-            if (expenseChartCard) expenseChartCard.classList.toggle('hidden', !showExpenseChart);
-            if (chartsGrid && !showIncomeChart && !showExpenseChart) chartsGrid.classList.add('hidden');
-            
-            renderCharts(incomeData, expenseData, view, showIncomeChart, showExpenseChart);
+
+            if (dashboardWidgets.form.visible) {
+                setupInlineForm(view.querySelector('#form-widget'));
+            }
+
+            if (dashboardWidgets.list.visible) {
+                const transactionListEl = view.querySelector('#transaction-list');
+                transactionListEl.innerHTML = '';
+                if (transactions.length === 0 && selectedAccountId) {
+                    transactionListEl.innerHTML = `<p class="text-center text-muted-foreground py-6">ยังไม่มีรายการ</p>`;
+                } else if (!selectedAccountId) {
+                    transactionListEl.innerHTML = `<p class="text-center text-muted-foreground py-6">กรุณาเลือกบัญชีจากหน้าตั้งค่า</p>`;
+                } else {
+                    const grouped = transactions.reduce((acc, t) => { (acc[t.date] = acc[t.date] || []).push(t); return acc; }, {});
+                    Object.keys(grouped).sort((a, b) => new Date(b) - new Date(a)).forEach(date => {
+                        const dateHeader = document.createElement('div');
+                        dateHeader.className = 'pt-4 pb-2';
+                        dateHeader.innerHTML = `<h4 class="font-semibold text-muted-foreground">${formatDateHeader(date)}</h4>`;
+                        transactionListEl.appendChild(dateHeader);
+                        grouped[date].sort((a, b) => b.id.localeCompare(a.id)).forEach(t => renderTransactionItem(t, transactionListEl));
+                    });
+                }
+                transactionListEl.addEventListener('click', handleTransactionListClick);
+            }
+
+            if (dashboardWidgets.charts.visible) {
+                const incomeData = {}, expenseData = {};
+                transactions.forEach(t => {
+                    if (t.type === 'income') incomeData[t.category] = (incomeData[t.category] || 0) + t.amount;
+                    else if (t.type === 'expense') expenseData[t.category] = (expenseData[t.category] || 0) + t.amount;
+                });
+
+                const showIncomeChart = getChartVisibility('Income');
+                const showExpenseChart = getChartVisibility('Expense');
+                const incomeChartCard = view.querySelector('#income-chart-card');
+                const expenseChartCard = view.querySelector('#expense-chart-card');
+                const chartsWidget = view.querySelector('#charts-widget');
+                
+                if(incomeChartCard) incomeChartCard.classList.toggle('hidden', !showIncomeChart);
+                if(expenseChartCard) expenseChartCard.classList.toggle('hidden', !showExpenseChart);
+                
+                if(chartsWidget && !showIncomeChart && !showExpenseChart) {
+                    chartsWidget.classList.add('hidden');
+                } else if (chartsWidget) {
+                    chartsWidget.classList.remove('hidden');
+                }
+
+                renderCharts(incomeData, expenseData, view);
+            }
         }
-
-        function renderWeeklyView() { renderTrackerView(true, currentWeekDate); }
 
         function renderCalendarView() {
             const view = document.getElementById('calendar-view');
@@ -598,47 +826,48 @@
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             let dailyData = {};
             const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
-            Object.values(allTransactions).filter(t => t.date && t.date.startsWith(monthStr)).forEach(t => {
+            
+            const filteredTransactions = selectedAccountId
+                ? Object.values(allTransactions).filter(t => t.accountId === selectedAccountId)
+                : [];
+
+            filteredTransactions.filter(t => t.date && t.date.startsWith(monthStr)).forEach(t => {
                 const day = new Date(t.date).getDate();
                 if (!dailyData[day]) dailyData[day] = { income: 0, expense: 0, savings: 0 };
                 dailyData[day][t.type] += t.amount;
             });
 
             let calendarHtml = `
-                <div class="bg-card p-4 sm:p-6 rounded-2xl shadow-md dark:shadow-slate-900/50">
+            <div class="max-w-6xl mx-auto">
+                <div class="glass-card p-4 sm:p-6">
                     <div class="flex items-center justify-between mb-4">
-                        <button id="prev-cal-month" class="p-2 rounded-full hover:bg-muted active:bg-secondary"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                        <h2 class="text-xl sm:text-2xl font-bold text-card-foreground">${getThaiMonthName(month)} ${year + 543}</h2>
-                        <button id="next-cal-month" class="p-2 rounded-full hover:bg-muted active:bg-secondary"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                        <button id="prev-cal-month" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                        <h2 class="text-xl sm:text-2xl font-bold text-foreground">${getThaiMonthName(month)} ${year + 543}</h2>
+                        <button id="next-cal-month" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
                     </div>
-                    <div class="grid grid-cols-7 gap-1 text-center font-semibold text-muted-foreground mb-2">
-                        ${[...Array(7).keys()].map(d => `<div class="text-xs">${getDayName(d)}</div>`).join('')}
+                    <div class="grid grid-cols-7 gap-1 text-center font-medium text-muted-foreground">
+                        ${[...Array(7).keys()].map(d => `<div class="text-sm pb-2">${getDayName(d, true)}</div>`).join('')}
                     </div>
-                    <div id="calendar-grid" class="grid grid-cols-7 gap-1">`;
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-1 md:gap-2">`;
             
-            for (let i = 0; i < firstDay; i++) calendarHtml += `<div class="calendar-day other-month rounded-lg"></div>`;
+            for (let i = 0; i < firstDay; i++) calendarHtml += `<div class="rounded-xl"></div>`;
             
             for (let day = 1; day <= daysInMonth; day++) {
                 const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                calendarHtml += `<div class="calendar-day aspect-square border border-border rounded-lg p-1.5 flex flex-col items-center cursor-pointer hover:bg-muted transition-colors" data-date="${dateStr}">
-                    <span class="font-medium text-foreground text-sm">${day}</span>
-                    <div class="transaction-list-text text-xs mt-1 flex-grow overflow-y-auto no-scrollbar">`;
+                let indicatorsHtml = '';
                 if (dailyData[day]) {
-                    if(dailyData[day].income > 0) calendarHtml += `<p class="text-emerald-600 truncate leading-tight">+${formatCurrency(dailyData[day].income)}</p>`;
-                    if(dailyData[day].expense > 0) calendarHtml += `<p class="text-rose-600 truncate leading-tight">-${formatCurrency(dailyData[day].expense)}</p>`;
-                    if(dailyData[day].savings > 0) calendarHtml += `<p class="text-blue-600 truncate leading-tight">=${formatCurrency(dailyData[day].savings)}</p>`;
+                    if(dailyData[day].income > 0) indicatorsHtml += `<div class="h-1.5 w-1.5 md:h-1 md:w-3/5 rounded-full md:rounded-sm bg-emerald-500 dark:bg-emerald-400"></div>`;
+                    if(dailyData[day].expense > 0) indicatorsHtml += `<div class="h-1.5 w-1.5 md:h-1 md:w-3/5 rounded-full md:rounded-sm bg-rose-500 dark:bg-rose-400"></div>`;
+                    if(dailyData[day].savings > 0) indicatorsHtml += `<div class="h-1.5 w-1.5 md:h-1 md:w-3/5 rounded-full md:rounded-sm bg-blue-500 dark:bg-blue-400"></div>`;
                 }
-                calendarHtml += `</div>
-                    <div class="dot-container">`;
-                if (dailyData[day]) {
-                    if(dailyData[day].income > 0) calendarHtml += `<div class="dot dot-income"></div>`;
-                    if(dailyData[day].expense > 0) calendarHtml += `<div class="dot dot-expense"></div>`;
-                    if(dailyData[day].savings > 0) calendarHtml += `<div class="dot dot-savings"></div>`;
-                }
-                calendarHtml += `</div></div>`;
+                calendarHtml += `
+                    <div class="calendar-day aspect-square bg-black/5 dark:bg-white/5 rounded-xl flex flex-col justify-between p-2 cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors" data-date="${dateStr}">
+                        <span class="font-semibold text-foreground text-base self-start">${day}</span>
+                        <div class="flex flex-row justify-center items-end gap-1.5 md:flex-col md:items-center md:w-full md:gap-1 pb-1">${indicatorsHtml}</div>
+                    </div>`;
             }
 
-            calendarHtml += `</div></div>`;
+            calendarHtml += `</div></div></div>`;
             view.innerHTML = calendarHtml;
             view.querySelector('#prev-cal-month').addEventListener('click', () => { currentCalendarDate.setMonth(month - 1); renderCalendarView(); });
             view.querySelector('#next-cal-month').addEventListener('click', () => { currentCalendarDate.setMonth(month + 1); renderCalendarView(); });
@@ -648,30 +877,47 @@
         function renderSummaryView() {
             const view = document.getElementById('summary-view');
             view.innerHTML = `
-                <div class="bg-card p-6 rounded-2xl shadow-md dark:shadow-slate-900/50">
+            <div class="max-w-6xl mx-auto">
+                <div class="glass-card p-6 text-center">
                     <div class="flex items-center justify-center mb-4 gap-4">
-                        <button id="prev-year" class="p-2 rounded-full hover:bg-muted active:bg-secondary"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                        <h2 id="current-year" class="text-2xl font-bold text-card-foreground"></h2>
-                        <button id="next-year" class="p-2 rounded-full hover:bg-muted active:bg-secondary"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                        <button id="prev-year" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                        <h2 id="current-year" class="text-2xl font-bold text-foreground leading-tight"></h2>
+                        <button id="next-year" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
                     </div>
-                    <div class="overflow-x-auto"><table class="min-w-full divide-y divide-border"><thead class="bg-muted"><tr>
+                    <div class="overflow-x-auto"><table class="min-w-full"><thead class="border-b-2 border-border"><tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">เดือน</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">รายรับ</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">รายจ่าย</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">ออม</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-muted-foreground uppercase tracking-wider">คงเหลือ</th>
-                    </tr></thead><tbody id="yearly-summary-table" class="bg-card divide-y divide-border"></tbody></table></div>
-                </div>`;
+                    </tr></thead><tbody id="yearly-summary-table" class="divide-y divide-border"></tbody></table></div>
+                </div>
+            </div>`;
             view.querySelector('#prev-year').addEventListener('click', () => { currentYear--; renderSummaryView(); });
             view.querySelector('#next-year').addEventListener('click', () => { currentYear++; renderSummaryView(); });
-            view.querySelector('#current-year').textContent = `ปี ${currentYear + 543}`;
-            const yearlyTransactions = Object.values(allTransactions).filter(t => t.date && new Date(t.date).getFullYear() === currentYear);
+
+            const yearTitle = view.querySelector('#current-year');
+            const accountName = selectedAccountId && allAccounts[selectedAccountId]
+                ? allAccounts[selectedAccountId].accountName
+                : 'กรุณาเลือกบัญชี';
+            yearTitle.innerHTML = `ปี ${currentYear + 543} <br><span class="text-lg font-medium text-muted-foreground">${accountName}</span>`;
+
+            const filteredTransactions = selectedAccountId
+                ? Object.values(allTransactions).filter(t => t.accountId === selectedAccountId)
+                : [];
+            
+            const yearlyTransactions = filteredTransactions.filter(t => t.date && new Date(t.date).getFullYear() === currentYear);
+            
             const summaryData = {};
             for(let i=0; i<12; i++) summaryData[i] = { income: 0, expense: 0, savings: 0 };
+            
             yearlyTransactions.forEach(t => {
                 const month = new Date(t.date).getMonth();
-                if (summaryData[month][t.type] !== undefined) summaryData[month][t.type] += t.amount;
+                if (summaryData[month] && summaryData[month][t.type] !== undefined) {
+                    summaryData[month][t.type] += t.amount;
+                }
             });
+
             const tableBody = view.querySelector('#yearly-summary-table');
             tableBody.innerHTML = '';
             let totalYearlyIncome = 0, totalYearlyExpense = 0, totalYearlySavings = 0;
@@ -682,48 +928,311 @@
                 totalYearlyExpense += monthData.expense;
                 totalYearlySavings += monthData.savings;
                 const tr = document.createElement('tr');
-                tr.className = 'cursor-pointer hover:bg-muted transition-colors';
+                tr.className = 'cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors';
                 tr.dataset.year = currentYear; tr.dataset.month = i;
                 tr.innerHTML = `
                     <td class="px-6 py-4 whitespace-nowrap font-medium text-foreground">${getThaiMonthName(i)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-emerald-600">${formatCurrency(monthData.income)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-rose-600">${formatCurrency(monthData.expense)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-blue-600">${formatCurrency(monthData.savings)}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right font-semibold ${balance >= 0 ? 'text-indigo-600' : 'text-rose-600'}">${formatCurrency(balance)}</td>`;
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-emerald-500">${formatCurrency(monthData.income)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-rose-500">${formatCurrency(monthData.expense)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-blue-500">${formatCurrency(monthData.savings)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right font-semibold ${balance >= 0 ? 'text-violet-500' : 'text-rose-500'}">${formatCurrency(balance)}</td>`;
                 tableBody.appendChild(tr);
             }
             tableBody.addEventListener('click', handleYearlyMonthClick);
             const totalRow = document.createElement('tr');
-            totalRow.className = 'bg-muted font-bold';
+            totalRow.className = 'bg-black/5 dark:bg-white/5 font-bold border-t-2 border-border';
             const totalBalance = totalYearlyIncome - totalYearlyExpense - totalYearlySavings;
             totalRow.innerHTML = `
                 <td class="px-6 py-4 whitespace-nowrap text-foreground">รวมทั้งปี</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-emerald-700">${formatCurrency(totalYearlyIncome)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-rose-700">${formatCurrency(totalYearlyExpense)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right text-blue-700">${formatCurrency(totalYearlySavings)}</td>
-                <td class="px-6 py-4 whitespace-nowrap text-right ${totalBalance >= 0 ? 'text-indigo-700' : 'text-rose-700'}">${formatCurrency(totalBalance)}</td>`;
+                <td class="px-6 py-4 whitespace-nowrap text-right text-emerald-600 dark:text-emerald-400">${formatCurrency(totalYearlyIncome)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-rose-600 dark:text-rose-400">${formatCurrency(totalYearlyExpense)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-blue-600 dark:text-blue-400">${formatCurrency(totalYearlySavings)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right ${totalBalance >= 0 ? 'text-violet-600 dark:text-violet-400' : 'text-rose-600 dark:text-rose-400'}">${formatCurrency(totalBalance)}</td>`;
             tableBody.appendChild(totalRow);
         }
 
+        function renderAccountView() {
+            const view = document.getElementById('account-view');
+            view.innerHTML = `
+            <div class="max-w-6xl mx-auto">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 md:col-span-2">
+                        <div id="add-account-toggle" class="flex justify-between items-center cursor-pointer">
+                            <h3 class="text-xl font-semibold text-foreground">เพิ่มบัญชีใหม่</h3>
+                            <svg id="add-account-chevron" class="w-6 h-6 transition-transform duration-300 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                        <div id="add-account-form-wrapper" class="overflow-hidden transition-all duration-500 ease-in-out">
+                             <form id="add-account-form" class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+                                <div>
+                                    <label for="accountName" class="block text-muted-foreground mb-2 text-sm font-medium">ชื่อบัญชี</label>
+                                    <input type="text" id="accountName" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" placeholder="เช่น บัญชีเงินสด, KBank" required>
+                                </div>
+                                <div>
+                                    <label class="block text-muted-foreground mb-2 text-sm font-medium">ประเภทบัญชี</label>
+                                    <div id="account-type-buttons" class="grid grid-cols-3 gap-1 rounded-xl bg-black/10 dark:bg-white/10 p-1">
+                                        <button type="button" data-value="เงินสด" class="type-btn account-type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground active">เงินสด</button>
+                                        <button type="button" data-value="ธนาคาร" class="type-btn account-type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">ธนาคาร</button>
+                                        <button type="button" data-value="บัตรเครดิต" class="type-btn account-type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">บัตรเครดิต</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="initialBalance" class="block text-muted-foreground mb-2 text-sm font-medium">ยอดคงเหลือเริ่มต้น</label>
+                                    <input type="number" id="initialBalance" value="0" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required>
+                                </div>
+                                 <div>
+                                    <label for="account-start-date-display" class="block text-muted-foreground mb-2 text-sm font-medium">วันที่เริ่มต้น</label>
+                                    <input type="text" id="account-start-date-display" readonly class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition cursor-pointer" required>
+                                    <input type="hidden" id="account-start-date">
+                                </div>
+                                <div class="sm:col-span-2">
+                                    <button type="submit" class="w-full bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:opacity-90 font-semibold transition-opacity">เพิ่มบัญชี</button>
+                                </div>
+                             </form>
+                        </div>
+                    </div>
+                    <div class="glass-card p-6 md:col-span-2">
+                        <h3 class="text-xl font-semibold mb-4 text-foreground">รายการบัญชี</h3>
+                        <div id="account-list" class="space-y-4">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            
+            // Collapsible form logic
+            const addAccountToggle = view.querySelector('#add-account-toggle');
+            const addAccountWrapper = view.querySelector('#add-account-form-wrapper');
+            const addAccountChevron = view.querySelector('#add-account-chevron');
+
+            const setAccountFormVisibility = () => {
+                if (isAddAccountFormVisible) {
+                    addAccountWrapper.style.maxHeight = addAccountWrapper.scrollHeight + 'px';
+                    addAccountWrapper.style.opacity = '1';
+                    addAccountChevron.classList.remove('rotate-180');
+                } else {
+                    addAccountWrapper.style.maxHeight = '0px';
+                    addAccountWrapper.style.opacity = '0';
+                    addAccountChevron.classList.add('rotate-180');
+                }
+            };
+            setAccountFormVisibility(); // Set initial state
+
+            addAccountToggle.addEventListener('click', () => {
+                isAddAccountFormVisible = !isAddAccountFormVisible;
+                localStorage.setItem('isAddAccountFormVisible', isAddAccountFormVisible);
+                setAccountFormVisibility();
+            });
+
+            // Account type button logic
+            const accountTypeButtons = view.querySelector('#account-type-buttons');
+            accountTypeButtons.addEventListener('click', (e) => {
+                const button = e.target.closest('.account-type-btn');
+                if (button) {
+                    accountTypeButtons.querySelectorAll('.account-type-btn').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                }
+            });
+
+
+            const accountDateDisplay = view.querySelector('#account-start-date-display');
+            const accountDateInput = view.querySelector('#account-start-date');
+            updateDateDisplay(accountDateDisplay, accountDateInput, accountStartDate);
+
+            accountDateDisplay.addEventListener('click', () => {
+                datePickerFor = 'account';
+                datePickerDate = new Date(accountStartDate);
+                showDatePickerModal();
+            });
+
+            const accountListEl = view.querySelector('#account-list');
+            accountListEl.innerHTML = '';
+            if (Object.keys(allAccounts).length === 0) {
+                 accountListEl.innerHTML = `<p class="text-center text-muted-foreground py-6">ยังไม่มีบัญชี</p>`;
+            } else {
+                Object.entries(allAccounts).forEach(([id, account]) => {
+                    const balance = calculateBalance(id);
+                    const accountEl = document.createElement('div');
+                    accountEl.className = 'flex justify-between items-center bg-black/5 dark:bg-white/5 p-4 rounded-2xl';
+                    accountEl.innerHTML = `
+                        <div>
+                            <p class="font-semibold text-foreground">${account.accountName}</p>
+                            <p class="text-sm text-muted-foreground">${account.accountType}</p>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-right">
+                                <p class="font-bold text-lg ${balance >= 0 ? 'text-foreground' : 'text-rose-500'}">${formatCurrency(balance)}</p>
+                                <p class="text-xs text-muted-foreground">ยอดคงเหลือ</p>
+                            </div>
+                            <button data-id="${id}" data-name="${account.accountName}" class="delete-account-btn p-2 ml-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                    `;
+                    accountListEl.appendChild(accountEl);
+                });
+            }
+
+            view.querySelector('#add-account-form').addEventListener('submit', addAccount);
+            view.querySelector('#account-list').addEventListener('click', handleDeleteAccountClick);
+        }
+
         function renderConfigView() {
+            const view = document.getElementById('config-view');
+            view.innerHTML = `
+            <div class="max-w-6xl mx-auto">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-1 space-y-6">
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-semibold mb-4 text-foreground">สลับบัญชี</h3>
+                            <div id="account-switcher-list" class="space-y-2"></div>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-2 space-y-6">
+                         <div class="glass-card p-6">
+                            <h3 class="text-xl font-semibold mb-4 text-foreground">จัดการ Dashboard</h3>
+                            <div id="dashboard-layout-manager" class="space-y-2"></div>
+                            <hr class="border-border my-4">
+                            <h4 class="text-lg font-semibold mb-3 text-foreground">การแสดงผลการ์ดสรุปยอด</h4>
+                            <div id="summary-card-manager" class="space-y-4"></div>
+                            <hr class="border-border my-4">
+                            <h4 class="text-lg font-semibold mb-3 text-foreground">การแสดงผลกราฟ</h4>
+                            <ul id="display-settings-list" class="space-y-4">
+                                <li class="flex justify-between items-center">
+                                    <span class="font-medium text-foreground">แสดงกราฟรายรับ</span>
+                                    <label for="toggle-income-chart-config" class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="toggle-income-chart-config" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-primary dark:peer-focus:ring-pink-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-pink-500"></div>
+                                    </label>
+                                </li>
+                                <li class="flex justify-between items-center">
+                                    <span class="font-medium text-foreground">แสดงกราฟรายจ่าย</span>
+                                     <label for="toggle-expense-chart-config" class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="toggle-expense-chart-config" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-primary dark:peer-focus:ring-pink-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-pink-500"></div>
+                                    </label>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-semibold mb-4 text-foreground">หมวดหมู่รายรับ</h3>
+                            <div class="flex mb-4">
+                                <input type="text" id="new-income-category" class="flex-grow border border-border bg-black/5 dark:bg-white/5 rounded-l-xl p-3 focus:ring-2 focus:ring-ring focus:outline-none transition" placeholder="ชื่อหมวดหมู่ใหม่">
+                                <button id="add-income-category-btn" class="bg-emerald-500 text-white px-5 rounded-r-xl hover:bg-emerald-600 transition-colors font-semibold">เพิ่ม</button>
+                            </div>
+                            <ul id="income-category-list" class="space-y-2"></ul>
+                        </div>
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-semibold mb-4 text-foreground">หมวดหมู่รายจ่าย</h3>
+                            <div class="flex mb-4">
+                                <input type="text" id="new-expense-category" class="flex-grow border border-border bg-black/5 dark:bg-white/5 rounded-l-xl p-3 focus:ring-2 focus:ring-ring focus:outline-none transition" placeholder="ชื่อหมวดหมู่ใหม่">
+                                <button id="add-expense-category-btn" class="bg-rose-500 text-white px-5 rounded-r-xl hover:bg-rose-600 transition-colors font-semibold">เพิ่ม</button>
+                            </div>
+                            <ul id="expense-category-list" class="space-y-2"></ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            `;
+            
+            const accountSwitcherList = document.getElementById('account-switcher-list');
+            accountSwitcherList.innerHTML = '';
+            const accountIds = Object.keys(allAccounts);
+
+            if (accountIds.length === 0) {
+                accountSwitcherList.innerHTML = `<p class="text-center text-muted-foreground py-4">ไม่มีบัญชีให้เลือก</p>`;
+            } else {
+                accountIds.forEach(id => {
+                    const account = allAccounts[id];
+                    const itemEl = document.createElement('div');
+                    const isActive = id === selectedAccountId;
+                    itemEl.className = `flex justify-between items-center p-3 rounded-xl cursor-pointer transition-colors ${isActive ? 'bg-primary/20 ring-1 ring-primary' : 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10'}`;
+                    itemEl.dataset.accountId = id;
+
+                    itemEl.innerHTML = `
+                        <div class="flex items-center gap-3">
+                             <div class="w-5 h-5 rounded-full flex items-center justify-center ${isActive ? 'bg-primary' : 'bg-transparent border-2 border-muted-foreground'}">
+                                ${isActive ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 text-primary-foreground" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>' : ''}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-foreground">${account.accountName}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-lg text-foreground">${formatCurrency(calculateBalance(id))}</p>
+                        </div>
+                    `;
+                    accountSwitcherList.appendChild(itemEl);
+                });
+            }
+
+            const layoutManager = document.getElementById('dashboard-layout-manager');
+            layoutManager.innerHTML = '';
+            Object.keys(dashboardWidgets).forEach((key, index) => {
+                const widget = dashboardWidgets[key];
+                const itemEl = document.createElement('div');
+                itemEl.className = 'flex justify-between items-center bg-black/5 dark:bg-white/5 p-3 rounded-xl';
+                itemEl.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <label for="toggle-widget-${key}" class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="toggle-widget-${key}" data-key="${key}" class="sr-only peer widget-toggle" ${widget.visible ? 'checked' : ''}>
+                            <div class="w-11 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-primary dark:peer-focus:ring-pink-500 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-pink-500"></div>
+                        </label>
+                        <span class="font-medium text-foreground">${widget.name}</span>
+                    </div>
+                    <div class="flex items-center gap-1">
+                        <button data-key="${key}" data-direction="up" class="reorder-btn p-1.5 rounded-lg hover:bg-black/10 dark:hover:bg-white/10" ${index === 0 ? 'disabled' : ''}>
+                            <svg class="w-5 h-5 ${index === 0 ? 'text-muted-foreground' : 'text-foreground'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" /></svg>
+                        </button>
+                        <button data-key="${key}" data-direction="down" class="reorder-btn p-1.5 rounded-lg hover:bg-black/10 dark:hover:bg-white/10" ${index === Object.keys(dashboardWidgets).length - 1 ? 'disabled' : ''}>
+                            <svg class="w-5 h-5 ${index === Object.keys(dashboardWidgets).length - 1 ? 'text-muted-foreground' : 'text-foreground'}" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                        </button>
+                    </div>
+                `;
+                layoutManager.appendChild(itemEl);
+            });
+            
+            const summaryCardManager = document.getElementById('summary-card-manager');
+            summaryCardManager.innerHTML = '';
+            Object.keys(summaryCardSettings).forEach(key => {
+                const setting = summaryCardSettings[key];
+                const itemEl = document.createElement('div');
+                itemEl.className = 'flex justify-between items-center';
+                itemEl.innerHTML = `
+                    <span class="font-medium text-foreground">${setting.name}</span>
+                    <label for="toggle-summary-${key}" class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggle-summary-${key}" data-key="${key}" class="sr-only peer summary-card-toggle" ${setting.visible ? 'checked' : ''}>
+                        <div class="w-11 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-primary dark:peer-focus:ring-pink-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-pink-500"></div>
+                    </label>
+                `;
+                summaryCardManager.appendChild(itemEl);
+            });
+
+
+            const incomeToggle = view.querySelector('#toggle-income-chart-config');
+            if (incomeToggle) incomeToggle.checked = getChartVisibility('Income');
+            
+            const expenseToggle = view.querySelector('#toggle-expense-chart-config');
+            if (expenseToggle) expenseToggle.checked = getChartVisibility('Expense');
+
             const incomeList = document.getElementById('income-category-list');
             incomeList.innerHTML = '';
             Object.entries(incomeCategories).forEach(([id, name]) => {
                 const li = document.createElement('li');
-                li.className = 'flex justify-between items-center bg-muted p-3 rounded-lg';
-                li.innerHTML = `<span class="text-foreground">${name}</span><button data-id="${id}" data-type="income" class="delete-category-btn text-rose-500 hover:text-rose-700 font-semibold">ลบ</button>`;
+                li.className = 'flex justify-between items-center bg-black/5 dark:bg-white/5 p-3 rounded-xl';
+                li.innerHTML = `<span class="text-foreground">${name}</span><button data-id="${id}" data-type="income" class="delete-category-btn text-rose-500 hover:text-rose-700 font-semibold px-2">ลบ</button>`;
                 incomeList.appendChild(li);
             });
             const expenseList = document.getElementById('expense-category-list');
             expenseList.innerHTML = '';
             Object.entries(expenseCategories).forEach(([id, name]) => {
                 const li = document.createElement('li');
-                li.className = 'flex justify-between items-center bg-muted p-3 rounded-lg';
-                li.innerHTML = `<span class="text-foreground">${name}</span><button data-id="${id}" data-type="expense" class="delete-category-btn text-rose-500 hover:text-rose-700 font-semibold">ลบ</button>`;
+                li.className = 'flex justify-between items-center bg-black/5 dark:bg-white/5 p-3 rounded-xl';
+                li.innerHTML = `<span class="text-foreground">${name}</span><button data-id="${id}" data-type="expense" class="delete-category-btn text-rose-500 hover:text-rose-700 font-semibold px-2">ลบ</button>`;
                 expenseList.appendChild(li);
             });
-            document.getElementById('toggle-income-chart-config').checked = getChartVisibility('Income');
-            document.getElementById('toggle-expense-chart-config').checked = getChartVisibility('Expense');
+            
+            document.getElementById('add-income-category-btn').addEventListener('click', () => addCategory('income'));
+            document.getElementById('add-expense-category-btn').addEventListener('click', () => addCategory('expense'));
         }
 
         function renderTransactionItem(t, listEl) {
@@ -734,87 +1243,79 @@
                 savings: { color: 'blue', icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>` }
             };
             const { color, icon } = typeInfo[t.type] || { color: 'gray', icon: '' };
-            itemEl.className = `flex items-center justify-between p-3 rounded-xl bg-card shadow-sm dark:shadow-slate-900/50`;
+            itemEl.className = `flex items-center justify-between p-3 rounded-2xl bg-black/5 dark:bg-white/5`;
             itemEl.innerHTML = `
-                <div class="flex items-center gap-4 flex-grow">
-                    <div class="w-11 h-11 rounded-full bg-${color}-500/10 flex items-center justify-center text-${color}-500">${icon}</div>
-                    <div>
-                        <p class="font-semibold text-card-foreground">${t.description}</p>
-                        <p class="text-sm text-muted-foreground">${t.category}</p>
+                <div class="flex items-center gap-4 flex-grow min-w-0">
+                    <div class="w-12 h-12 rounded-2xl bg-${color}-500/20 flex items-center justify-center text-${color}-600 dark:text-${color}-400 flex-shrink-0">${icon}</div>
+                    <div class="min-w-0">
+                        <p class="font-semibold text-foreground truncate">${t.description}</p>
+                        <p class="text-sm text-muted-foreground truncate">${t.category}</p>
                     </div>
                 </div>
                 <div class="text-right flex-shrink-0 mx-4">
                     <p class="font-bold text-lg text-foreground">${formatCurrency(t.amount)}</p>
                 </div>
                 <div class="flex items-center gap-0">
-                    <button data-id="${t.id}" class="delete-btn p-2 text-muted-foreground hover:text-rose-600 hover:bg-rose-500/10 rounded-full transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button>
+                    <button data-id="${t.id}" class="delete-btn p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button>
                 </div>`;
             listEl.appendChild(itemEl);
         }
         
-        // --- FIXED: renderCharts function ---
-        function renderCharts(incomeData, expenseData, view, showIncomeChart, showExpenseChart) {
+        function renderCharts(incomeData, expenseData, view) {
             const isDarkMode = document.documentElement.classList.contains('dark');
-            const textColor = isDarkMode ? '#e2e8f0' : '#475569'; 
+            const textColor = isDarkMode ? 'hsl(210 20% 98% / 0.8)' : 'hsl(224 71% 4% / 0.8)'; 
 
             Chart.defaults.color = textColor;
-            const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: textColor, font: { family: "'Kanit', sans-serif" } } }, tooltip: { callbacks: { label: (c) => `${c.label}: ${formatCurrency(c.parsed)}` }, titleFont: { family: "'Kanit', sans-serif" }, bodyFont: { family: "'Kanit', sans-serif" }, backgroundColor: isDarkMode ? '#1e293b' : '#ffffff', titleColor: textColor, bodyColor: textColor }}};
+            Chart.defaults.font.family = "'Kanit', sans-serif";
+            const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: textColor, boxWidth: 12, padding: 20 } }, tooltip: { callbacks: { label: (c) => `${c.label}: ${formatCurrency(c.parsed)}` }, backgroundColor: isDarkMode ? '#1e293b' : '#ffffff', titleColor: isDarkMode ? '#e2e8f0' : '#0f172a', bodyColor: isDarkMode ? '#e2e8f0' : '#0f172a' }}};
             
-            const incomeColors = ['#10b981', '#059669', '#34d399', '#047857', '#6ee7b7', '#065f46', '#a7f3d0'];
-            const expenseColors = ['#f43f5e', '#e11d48', '#fb7185', '#be123c', '#fda4af', '#9f1239', '#fecdd3'];
+            const incomeColors = ['#34d399', '#10b981', '#6ee7b7', '#059669', '#a7f3d0', '#047857'];
+            const expenseColors = ['#fb7185', '#f43f5e', '#fda4af', '#e11d48', '#fecdd3', '#be123c'];
 
-            const getCategoryColor = (category, colorPalette) => {
-                let hash = 0;
-                if (category.length === 0) return colorPalette[0];
-                for (let i = 0; i < category.length; i++) { hash = ((hash << 5) - hash) + category.charCodeAt(i); hash |= 0; }
-                return colorPalette[Math.abs(hash) % colorPalette.length];
-            };
-
-            if (showIncomeChart) {
+            const incomeCanvas = view.querySelector('#income-chart');
+            if (incomeCanvas) {
                 if (incomeChart) incomeChart.destroy();
-                const incomeCanvas = view.querySelector('#income-chart');
-                if (incomeCanvas) { // Check if canvas element exists
-                    const incomeCtx = incomeCanvas.getContext('2d');
-                    const incomeLabels = Object.keys(incomeData);
-                    if (incomeLabels.length > 0) {
-                        incomeChart = new Chart(incomeCtx, { type: 'doughnut', data: { labels: incomeLabels, datasets: [{ data: Object.values(incomeData), backgroundColor: incomeLabels.map(label => getCategoryColor(label, incomeColors)), borderWidth: 0, cutout: '60%' }] }, options: chartOptions });
-                    } else {
-                        incomeCtx.clearRect(0, 0, incomeCtx.canvas.width, incomeCtx.canvas.height);
-                        incomeCtx.textAlign = "center";
-                        incomeCtx.font = "16px 'Kanit'";
-                        incomeCtx.fillStyle = textColor;
-                        incomeCtx.fillText("ไม่มีข้อมูลรายรับ", incomeCtx.canvas.width / 2, incomeCtx.canvas.height / 2);
-                    }
+                const incomeCtx = incomeCanvas.getContext('2d');
+                const incomeLabels = Object.keys(incomeData);
+                if (incomeLabels.length > 0) {
+                    incomeChart = new Chart(incomeCtx, { type: 'doughnut', data: { labels: incomeLabels, datasets: [{ data: Object.values(incomeData), backgroundColor: incomeColors, borderWidth: 0, cutout: '65%' }] }, options: chartOptions });
+                } else {
+                    incomeCtx.clearRect(0, 0, incomeCtx.canvas.width, incomeCtx.canvas.height);
+                    incomeCtx.textAlign = "center";
+                    incomeCtx.font = "16px 'Kanit'";
+                    incomeCtx.fillStyle = textColor;
+                    incomeCtx.fillText("ไม่มีข้อมูลรายรับ", incomeCtx.canvas.width / 2, incomeCtx.canvas.height / 2);
                 }
             }
 
-            if (showExpenseChart) {
+            const expenseCanvas = view.querySelector('#expense-chart');
+            if (expenseCanvas) {
                 if (expenseChart) expenseChart.destroy();
-                const expenseCanvas = view.querySelector('#expense-chart');
-                if (expenseCanvas) { // Check if canvas element exists
-                    const expenseCtx = expenseCanvas.getContext('2d');
-                    const expenseLabels = Object.keys(expenseData);
-                    if (expenseLabels.length > 0) {
-                        expenseChart = new Chart(expenseCtx, { type: 'doughnut', data: { labels: expenseLabels, datasets: [{ data: Object.values(expenseData), backgroundColor: expenseLabels.map(label => getCategoryColor(label, expenseColors)), borderWidth: 0, cutout: '60%' }] }, options: chartOptions });
-                    } else {
-                        expenseCtx.clearRect(0, 0, expenseCtx.canvas.width, expenseCtx.canvas.height);
-                        expenseCtx.textAlign = "center";
-                        expenseCtx.font = "16px 'Kanit'";
-                        expenseCtx.fillStyle = textColor;
-                        expenseCtx.fillText("ไม่มีข้อมูลรายจ่าย", expenseCtx.canvas.width / 2, expenseCtx.canvas.height / 2);
-                    }
+                const expenseCtx = expenseCanvas.getContext('2d');
+                const expenseLabels = Object.keys(expenseData);
+                if (expenseLabels.length > 0) {
+                    expenseChart = new Chart(expenseCtx, { type: 'doughnut', data: { labels: expenseLabels, datasets: [{ data: Object.values(expenseData), backgroundColor: expenseColors, borderWidth: 0, cutout: '65%' }] }, options: chartOptions });
+                } else {
+                    expenseCtx.clearRect(0, 0, expenseCtx.canvas.width, expenseCtx.canvas.height);
+                    expenseCtx.textAlign = "center";
+                    expenseCtx.font = "16px 'Kanit'";
+                    expenseCtx.fillStyle = textColor;
+                    expenseCtx.fillText("ไม่มีข้อมูลรายจ่าย", expenseCtx.canvas.width / 2, expenseCtx.canvas.height / 2);
                 }
             }
         }
 
+        // --- MODAL FUNCTIONS ---
         function showDailyDetailsModal(dateStr) {
             const modalContainer = document.getElementById('daily-details-modal');
-            const modalContent = modalContainer.querySelector('div');
+            const modalContent = modalContainer.querySelector('.glass-card');
             const modalTitle = document.getElementById('daily-modal-title');
             const listEl = document.getElementById('daily-transaction-list');
             const date = new Date(dateStr + 'T00:00:00');
             modalTitle.textContent = `รายการวันที่ ${date.toLocaleDateString('th-TH', { dateStyle: 'full' })}`;
-            const dailyTransactions = Object.entries(allTransactions).filter(([id, t]) => t.date === dateStr).map(([id, t]) => ({ id, ...t }));
+            const dailyTransactions = Object.entries(allTransactions)
+                .filter(([id, t]) => t.date === dateStr && t.accountId === selectedAccountId)
+                .map(([id, t]) => ({ id, ...t }));
             listEl.innerHTML = '';
             if (dailyTransactions.length > 0) {
                 let dailyIncome = 0, dailyExpense = 0, dailySavings = 0;
@@ -825,9 +1326,9 @@
                 });
                 const summaryHtml = `
                     <div class="grid grid-cols-3 gap-2 text-center mb-4 border-b pb-4 border-border">
-                        <div class="bg-emerald-500/10 p-2 rounded-xl"><p class="text-xs text-emerald-600 dark:text-emerald-500">รายรับ</p><p class="text-lg font-bold text-emerald-700 dark:text-emerald-400">${formatCurrency(dailyIncome)}</p></div>
-                        <div class="bg-rose-500/10 p-2 rounded-xl"><p class="text-xs text-rose-600 dark:text-rose-500">รายจ่าย</p><p class="text-lg font-bold text-rose-700 dark:text-rose-400">${formatCurrency(dailyExpense)}</p></div>
-                        <div class="bg-blue-500/10 p-2 rounded-xl"><p class="text-xs text-blue-600 dark:text-blue-500">ออม</p><p class="text-lg font-bold text-blue-700 dark:text-blue-400">${formatCurrency(dailySavings)}</p></div>
+                        <div class="bg-emerald-500/20 p-2 rounded-xl"><p class="text-xs text-emerald-600 dark:text-emerald-400">รายรับ</p><p class="text-lg font-bold text-emerald-600 dark:text-emerald-300">${formatCurrency(dailyIncome)}</p></div>
+                        <div class="bg-rose-500/20 p-2 rounded-xl"><p class="text-xs text-rose-600 dark:text-rose-400">รายจ่าย</p><p class="text-lg font-bold text-rose-600 dark:text-rose-300">${formatCurrency(dailyExpense)}</p></div>
+                        <div class="bg-blue-500/20 p-2 rounded-xl"><p class="text-xs text-blue-600 dark:text-blue-400">ออม</p><p class="text-lg font-bold text-blue-600 dark:text-blue-300">${formatCurrency(dailySavings)}</p></div>
                     </div>`;
                 listEl.innerHTML += summaryHtml;
                 dailyTransactions.sort((a, b) => b.id.localeCompare(a.id)).forEach(t => renderTransactionItem(t, listEl));
@@ -838,12 +1339,102 @@
             modalContent.classList.remove('modal-leave', 'modal-leave-active');
             modalContent.classList.add('modal-enter-active');
         }
-        function hideDailyDetailsModal() {  
-            const modalContainer = document.getElementById('daily-details-modal');
-            const modalContent = modalContainer.querySelector('div');
+        function hideModal(modalId) {  
+            const modalContainer = document.getElementById(modalId);
+            const modalContent = modalContainer.querySelector('.modal-enter');
             modalContent.classList.replace('modal-enter-active', 'modal-leave-active');
             setTimeout(() => modalContainer.classList.add('hidden'), 300);
         }
+        function showCategoryDetailsModal(type, transactions) {
+            currentModalTransactions = transactions; 
+            currentModalType = type;
+            const modal = document.getElementById('category-details-modal');
+            const modalContent = modal.querySelector('.glass-card');
+            const titleEl = document.getElementById('category-modal-title');
+            const filterWrapper = document.getElementById('category-filter-container');
+            const filterContainer = document.getElementById('category-filter-buttons');
+            const typeNames = { income: 'รายรับ', expense: 'รายจ่าย', savings: 'เงินออม' };
+            titleEl.textContent = `รายการ${typeNames[type]}`;
+            
+            const categories = [...new Set(transactions.map(t => t.category))];
+            
+            if (type !== 'savings' && categories.length > 1) {
+                filterWrapper.classList.remove('hidden');
+                filterContainer.innerHTML = `<button class="category-filter-btn active border border-border text-foreground py-1.5 px-4 rounded-full text-sm font-medium transition-colors" data-category="all">ทั้งหมด</button>`;
+                categories.forEach(cat => {
+                    if (cat) filterContainer.innerHTML += `<button class="category-filter-btn border border-border text-foreground py-1.5 px-4 rounded-full text-sm font-medium hover:bg-black/10 dark:hover:bg-white/10 transition-colors" data-category="${cat}">${cat}</button>`;
+                });
+            } else {
+                filterWrapper.classList.add('hidden');
+                filterContainer.innerHTML = '';
+            }
+            renderFilteredCategoryTransactions('all');
+            modal.classList.remove('hidden');
+            modalContent.classList.remove('modal-leave', 'modal-leave-active');
+            modalContent.classList.add('modal-enter-active');
+        }
+        function renderFilteredCategoryTransactions(selectedCategory) {
+            const listEl = document.getElementById('category-transaction-list');
+            const totalEl = document.getElementById('category-modal-total');
+            listEl.innerHTML = '';
+            const transactionsToRender = selectedCategory === 'all' 
+                ? currentModalTransactions 
+                : currentModalTransactions.filter(t => t.category === selectedCategory);
+            const totalAmount = transactionsToRender.reduce((sum, t) => sum + t.amount, 0);
+            const typeStyles = { income: { text: 'ยอดรวมรายรับ', color: 'text-emerald-500 dark:text-emerald-400' }, expense: { text: 'ยอดรวมรายจ่าย', color: 'text-rose-500 dark:text-rose-400' }, savings: { text: 'ยอดรวมเงินออม', color: 'text-blue-500 dark:text-blue-400' }};
+            const style = typeStyles[currentModalType] || { text: 'ยอดรวม', color: 'text-foreground' };
+            const labelText = selectedCategory === 'all' ? style.text : `ยอดรวม (${selectedCategory})`;
+            totalEl.innerHTML = `<p class="text-sm text-muted-foreground">${labelText}</p><p class="text-3xl font-bold ${style.color}">${formatCurrency(totalAmount)}</p>`;
+            if (transactionsToRender.length === 0) { listEl.innerHTML = `<p class="text-center text-muted-foreground py-4">ไม่มีรายการ</p>`; return; }
+            transactionsToRender.sort((a, b) => b.id.localeCompare(a.id)).forEach(t => renderTransactionItem(t, listEl));
+        }
+        function showDatePickerModal() { 
+            const modal = document.getElementById('date-picker-modal');
+            const modalContent = modal.querySelector('.glass-card');
+            renderDatePicker(); 
+            modal.classList.remove('hidden');
+            modalContent.classList.remove('modal-leave', 'modal-leave-active');
+            modalContent.classList.add('modal-enter-active'); 
+        }
+        
+        function showConfirmationModal(title, message, onConfirm, type = 'warning') {
+            const modal = document.getElementById('confirmation-modal');
+            const modalContent = modal.querySelector('.glass-card');
+            document.getElementById('confirmation-modal-title').textContent = title;
+            document.getElementById('confirmation-modal-message').innerHTML = message;
+            confirmAction = onConfirm;
+
+            const confirmBtn = document.getElementById('confirm-confirmation-btn');
+            const cancelBtn = document.getElementById('cancel-confirmation-btn');
+            
+            const iconWrapper = document.getElementById('confirmation-modal-icon-wrapper');
+            const warningIcon = document.getElementById('confirmation-modal-icon-warning');
+            const infoIcon = document.getElementById('confirmation-modal-icon-info');
+
+            if (type === 'info') {
+                iconWrapper.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-500/20 mb-4';
+                warningIcon.classList.add('hidden');
+                infoIcon.classList.remove('hidden');
+            } else { // default to warning
+                iconWrapper.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-rose-500/20 mb-4';
+                warningIcon.classList.remove('hidden');
+                infoIcon.classList.add('hidden');
+            }
+
+            if (onConfirm) {
+                confirmBtn.classList.remove('hidden');
+                cancelBtn.textContent = 'ยกเลิก';
+            } else {
+                confirmBtn.classList.add('hidden');
+                cancelBtn.textContent = 'ปิด';
+            }
+
+            modal.classList.remove('hidden');
+            modalContent.classList.remove('modal-leave', 'modal-leave-active');
+            modalContent.classList.add('modal-enter-active');
+        }
+
+        // --- DATABASE & LOGIC FUNCTIONS ---
         function populateCategoryButtons(type, buttonContainer, wrapper) {
             buttonContainer.innerHTML = ''; 
             if (type === 'savings') {
@@ -861,35 +1452,186 @@
                 button.type = 'button';
                 button.dataset.value = name;
                 button.textContent = name;
-                button.className = 'category-btn border border-input text-foreground py-2 px-4 rounded-full text-sm font-medium hover:bg-muted transition-colors';
+                button.className = 'category-btn border border-border text-foreground py-2 px-4 rounded-full text-sm font-medium hover:bg-black/10 dark:hover:bg-white/10 transition-colors';
                 buttonContainer.appendChild(button);
             });
         }
+        
         function addTransaction(e) {
             e.preventDefault();
+            
+            if (!selectedAccountId) {
+                showConfirmationModal('เกิดข้อผิดพลาด', 'กรุณาเลือกหรือสร้างบัญชีก่อนเพิ่มรายการ', null, 'info');
+                return;
+            }
+
             const form = e.target;
             const type = form.querySelector('.type-btn.active')?.dataset.value;
             const category = form.querySelector('.category-btn.active')?.dataset.value;
-            const transactionData = { type: type, description: form.querySelector('#inline-transaction-description').value, amount: parseFloat(form.querySelector('#inline-transaction-amount').value), category: type === 'savings' ? 'การออม' : category, date: form.querySelector('#inline-transaction-date').value };
-            if(!transactionData.type || !transactionData.description || !transactionData.amount || !transactionData.date) { alert('กรุณากรอกข้อมูลให้ครบถ้วน'); return; }
-            if(transactionData.type !== 'savings' && !transactionData.category) { alert('กรุณาเลือกหมวดหมู่'); return; }
+            
+            const transactionData = { 
+                type: type, 
+                description: form.querySelector('#inline-transaction-description').value, 
+                amount: parseFloat(form.querySelector('#inline-transaction-amount').value), 
+                category: type === 'savings' ? 'การออม' : category, 
+                date: form.querySelector('#inline-transaction-date').value,
+                accountId: selectedAccountId 
+            };
+
+            if(!transactionData.type || !transactionData.description || !transactionData.amount || !transactionData.date) { 
+                showConfirmationModal('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกข้อมูลที่จำเป็นทั้งหมด', null, 'info');
+                return; 
+            }
+            if(transactionData.type !== 'savings' && !transactionData.category) { 
+                showConfirmationModal('ข้อมูลไม่ครบถ้วน', 'กรุณาเลือกหมวดหมู่สำหรับรายการนี้', null, 'info');
+                return; 
+            }
+            
             push(ref(db, 'transactions'), transactionData).then(() => {
                 form.reset();
                 formDate = new Date();
-                updateDateDisplay(form.querySelector('#inline-transaction-date-display'), form.querySelector('#inline-transaction-date'));
+                updateDateDisplay(form.querySelector('#inline-transaction-date-display'), form.querySelector('#inline-transaction-date'), formDate);
                 handleTypeButtonClick(null, 'income', form.querySelector('#inline-transaction-type-buttons'), form.querySelector('#inline-transaction-category-buttons'), form.querySelector('#inline-category-wrapper'));
             }).catch(err => console.error("Write failed:", err));
         }
         function deleteTransaction(id) { remove(ref(db, `transactions/${id}`)); }
+        
+        function addAccount(e) {
+            e.preventDefault();
+            const form = e.target;
+            const accountData = {
+                accountName: form.querySelector('#accountName').value,
+                accountType: form.querySelector('.account-type-btn.active')?.dataset.value || 'เงินสด',
+                initialBalance: parseFloat(form.querySelector('#initialBalance').value),
+                startDate: form.querySelector('#account-start-date').value,
+            };
+
+            if (!accountData.accountName || !accountData.startDate) {
+                showConfirmationModal('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกชื่อบัญชีและวันที่เริ่มต้น', null, 'info');
+                return;
+            }
+
+            push(ref(db, 'accounts'), accountData)
+                .then(() => {
+                    form.reset();
+                    accountStartDate = new Date();
+                    const accountDateDisplay = document.querySelector('#account-start-date-display');
+                    const accountDateInput = document.querySelector('#account-start-date');
+                    if (accountDateDisplay && accountDateInput) {
+                        updateDateDisplay(accountDateDisplay, accountDateInput, accountStartDate);
+                    }
+                })
+                .catch(err => console.error("Add account failed:", err));
+        }
+
+        function deleteAccount(accountId, accountName) {
+            const transactionsInAccount = Object.values(allTransactions).some(t => t.accountId === accountId);
+            
+            if (transactionsInAccount) {
+                showConfirmationModal(
+                    'ไม่สามารถลบได้',
+                    `ไม่สามารถลบบัญชี <strong>"${accountName}"</strong> ได้ เนื่องจากยังมีรายการธุรกรรมอยู่<br>กรุณาลบรายการทั้งหมดในบัญชีก่อน`,
+                    null,
+                    'warning'
+                );
+                return;
+            }
+            
+            showConfirmationModal(
+                'ยืนยันการลบ',
+                `คุณแน่ใจหรือไม่ว่าต้องการลบบัญชี <strong>"${accountName}"</strong>? <br>การกระทำนี้ไม่สามารถย้อนกลับได้`,
+                () => {
+                    const dbRef = ref(db, 'accounts/' + accountId);
+                    remove(dbRef);
+                    
+                    if (selectedAccountId === accountId) {
+                        const tempAccounts = { ...allAccounts };
+                        delete tempAccounts[accountId];
+                        const accountKeys = Object.keys(tempAccounts);
+                        selectedAccountId = accountKeys.length > 0 ? accountKeys[0] : null;
+                        localStorage.setItem('selectedAccountId', selectedAccountId);
+                    }
+                },
+                'warning'
+            );
+        }
+
+        function calculateBalance(accountId) {
+            const account = allAccounts[accountId];
+            if (!account) return 0;
+            let balance = account.initialBalance || 0;
+            Object.values(allTransactions).forEach(t => {
+                if (t.accountId === accountId) {
+                    if (t.type === 'income') balance += t.amount;
+                    else balance -= t.amount;
+                }
+            });
+            return balance;
+        }
+
         function addCategory(type) {
             const input = document.getElementById(`new-${type}-category`);
             const name = input.value.trim();
             if (name) { push(ref(db, `config/${type}Categories`), name).then(() => input.value = ''); }
         }
-        function deleteCategory(type, id) { if (confirm('แน่ใจหรือไม่?')) remove(ref(db, `config/${type}Categories/${id}`)); }
+        function deleteCategory(type, id) { 
+            showConfirmationModal('ยืนยันการลบ', 'คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่นี้?', () => {
+                remove(ref(db, `config/${type}Categories/${id}`));
+            }, 'warning');
+        }
+        
+        // --- EVENT HANDLERS ---
         function handleTransactionListClick(e) {
             const deleteBtn = e.target.closest('.delete-btn');
-            if (deleteBtn) deleteTransaction(deleteBtn.dataset.id);
+            if (deleteBtn) {
+                showConfirmationModal('ยืนยันการลบ', 'คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?', () => {
+                    deleteTransaction(deleteBtn.dataset.id);
+                }, 'warning');
+            }
+        }
+        function handleCategorySummaryClick(e) {
+            const item = e.target.closest('.category-summary-item');
+            if (!item) return;
+
+            const { type, category } = item.dataset;
+            
+            const isWeekly = currentView === 'weekly';
+            const dateForPeriod = isWeekly ? currentWeekDate : currentDate;
+            let start, end;
+
+            if (isWeekly) {
+                start = new Date(dateForPeriod);
+                start.setHours(0, 0, 0, 0);
+                start.setDate(start.getDate() - start.getDay());
+                end = new Date(start);
+                end.setDate(end.getDate() + 6);
+                end.setHours(23, 59, 59, 999);
+            } else {
+                const year = dateForPeriod.getFullYear();
+                const month = dateForPeriod.getMonth();
+                start = new Date(year, month, 1);
+                end = new Date(year, month + 1, 0);
+                end.setHours(23, 59, 59, 999);
+            }
+
+            const transactionsToShow = Object.values(allTransactions).filter(t => {
+                if (t.accountId !== selectedAccountId || t.type !== type || t.category !== category) {
+                    return false;
+                }
+                const tDate = new Date(t.date + 'T00:00:00');
+                return tDate >= start && tDate <= end;
+            });
+
+            if (transactionsToShow.length > 0) {
+                showCategoryDetailsModal(type, transactionsToShow);
+            }
+        }
+        function handleDeleteAccountClick(e) {
+            const deleteBtn = e.target.closest('.delete-account-btn');
+            if (deleteBtn) {
+                const { id, name } = deleteBtn.dataset;
+                deleteAccount(id, name);
+            }
         }
         function handleCalendarDayClick(e) {
             const dayEl = e.target.closest('.calendar-day');
@@ -914,91 +1656,76 @@
             const card = e.target.closest('[data-type]');
             if (!card || card.dataset.type === 'balance') return;
             const type = card.dataset.type;
-            let transactionsToShow;
+
             const isWeekly = currentView === 'weekly';
             const dateForPeriod = isWeekly ? currentWeekDate : currentDate;
+            let start, end;
+
             if (isWeekly) {
-                const startOfWeek = new Date(dateForPeriod); startOfWeek.setHours(0, 0, 0, 0); startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
-                const endOfWeek = new Date(startOfWeek); endOfWeek.setDate(endOfWeek.getDate() + 6); endOfWeek.setHours(23, 59, 59, 999);
-                transactionsToShow = Object.entries(allTransactions).filter(([id, t]) => {
-                    const tDate = new Date(t.date + 'T00:00:00');
-                    return t.type === type && tDate >= startOfWeek && tDate <= endOfWeek;
-                }).map(([id, t]) => ({ id, ...t }));
+                start = new Date(dateForPeriod);
+                start.setHours(0, 0, 0, 0);
+                start.setDate(start.getDate() - start.getDay());
+                end = new Date(start);
+                end.setDate(end.getDate() + 6);
+                end.setHours(23, 59, 59, 999);
             } else {
-                const year = dateForPeriod.getFullYear(); const month = dateForPeriod.getMonth();
-                const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
-                transactionsToShow = Object.entries(allTransactions).filter(([id, t]) => t.type === type && t.date && t.date.startsWith(monthStr)).map(([id, t]) => ({ id, ...t }));
+                const year = dateForPeriod.getFullYear();
+                const month = dateForPeriod.getMonth();
+                start = new Date(year, month, 1);
+                end = new Date(year, month + 1, 0);
+                end.setHours(23, 59, 59, 999);
             }
+
+            const transactionsToShow = Object.entries(allTransactions).filter(([id, t]) => {
+                if (t.accountId !== selectedAccountId || t.type !== type) {
+                    return false;
+                }
+                const tDate = new Date(t.date + 'T00:00:00');
+                return tDate >= start && tDate <= end;
+            }).map(([id, t]) => ({ id, ...t }));
+
+            if (transactionsToShow.length === 0) {
+                const typeNames = { income: 'รายรับ', expense: 'รายจ่าย', savings: 'เงินออม' };
+                showConfirmationModal('ไม่มีรายการ', `ไม่พบข้อมูล${typeNames[type]}ในช่วงเวลานี้`, null, 'info');
+                return;
+            }
+            
             showCategoryDetailsModal(type, transactionsToShow);
         }
-        function showCategoryDetailsModal(type, transactions) {
-            currentModalTransactions = transactions; currentModalType = type;
-            const modal = document.getElementById('category-details-modal');
-            const titleEl = document.getElementById('category-modal-title');
-            const filterWrapper = document.getElementById('category-filter-container');
-            const filterContainer = document.getElementById('category-filter-buttons');
-            const typeNames = { income: 'รายรับ', expense: 'รายจ่าย', savings: 'เงินออม' };
-            titleEl.textContent = `รายการ${typeNames[type]}`;
-            const categories = [...new Set(transactions.map(t => t.category))];
-            if (type !== 'savings' && categories.length > 1) {
-                filterWrapper.classList.remove('hidden');
-                filterContainer.innerHTML = `<button class="category-filter-btn active border border-input text-foreground py-1.5 px-4 rounded-full text-sm font-medium transition-colors" data-category="all">ทั้งหมด</button>`;
-                categories.forEach(cat => {
-                    if (cat) filterContainer.innerHTML += `<button class="category-filter-btn border border-input text-foreground py-1.5 px-4 rounded-full text-sm font-medium hover:bg-muted transition-colors" data-category="${cat}">${cat}</button>`;
-                });
-            } else {
-                filterWrapper.classList.add('hidden'); filterContainer.innerHTML = '';
-            }
-            renderFilteredCategoryTransactions('all', type);
-            modal.classList.remove('hidden');
-            modal.querySelector('.modal-enter').classList.add('modal-enter-active');
-        }
-        function hideCategoryDetailsModal() {
-            const modal = document.getElementById('category-details-modal');
-            modal.querySelector('.modal-enter').classList.remove('modal-enter-active');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-        function renderFilteredCategoryTransactions(selectedCategory, type) {
-            const listEl = document.getElementById('category-transaction-list');
-            const totalEl = document.getElementById('category-modal-total');
-            listEl.innerHTML = '';
-            const transactionsToRender = selectedCategory === 'all' ? currentModalTransactions : currentModalTransactions.filter(t => t.category === selectedCategory);
-            const totalAmount = transactionsToRender.reduce((sum, t) => sum + t.amount, 0);
-            const typeStyles = { income: { text: 'ยอดรวมรายรับ', color: 'text-emerald-500' }, expense: { text: 'ยอดรวมรายจ่าย', color: 'text-rose-500' }, savings: { text: 'ยอดรวมเงินออม', color: 'text-blue-500' }};
-            const style = typeStyles[type] || { text: 'ยอดรวม', color: 'text-foreground' };
-            const labelText = selectedCategory === 'all' ? style.text : `ยอดรวม (${selectedCategory})`;
-            totalEl.innerHTML = `<p class="text-sm text-muted-foreground">${labelText}</p><p class="text-3xl font-bold ${style.color}">${formatCurrency(totalAmount)}</p>`;
-            if (transactionsToRender.length === 0) { listEl.innerHTML = `<p class="text-center text-muted-foreground py-4">ไม่มีรายการ</p>`; return; }
-            transactionsToRender.sort((a, b) => b.id.localeCompare(a.id)).forEach(t => renderTransactionItem(t, listEl));
-        }
-        function setupInlineForm(view) {
-            const form = view.querySelector('#inline-transaction-form'); if (!form) return;
+
+        // --- APP INITIALIZATION ---
+        function setupInlineForm(formContainer) {
+            const form = formContainer.querySelector('#inline-transaction-form'); if (!form) return;
             const typeButtons = form.querySelector('#inline-transaction-type-buttons');
             const categoryButtons = form.querySelector('#inline-transaction-category-buttons');
             const categoryWrapper = form.querySelector('#inline-category-wrapper');
             const dateDisplay = form.querySelector('#inline-transaction-date-display');
             const dateInput = form.querySelector('#inline-transaction-date');
+            const submitBtn = form.querySelector('#add-transaction-btn');
+            const warningEl = form.querySelector('#form-account-warning');
+
+            if (!selectedAccountId) {
+                if(submitBtn) submitBtn.disabled = true;
+                if(warningEl) {
+                    warningEl.textContent = 'กรุณาเลือกหรือสร้างบัญชีก่อน';
+                    warningEl.classList.remove('hidden');
+                }
+            } else {
+                 if(submitBtn) submitBtn.disabled = false;
+                 if(warningEl) warningEl.classList.add('hidden');
+            }
+            
             form.addEventListener('submit', addTransaction);
-            dateDisplay.addEventListener('click', () => { datePickerDate = new Date(formDate); showDatePickerModal(); });
+            dateDisplay.addEventListener('click', () => {
+                datePickerFor = 'transaction';
+                datePickerDate = new Date(formDate);
+                showDatePickerModal();
+            });
             typeButtons.addEventListener('click', (e) => { const button = e.target.closest('.type-btn'); if(button) handleTypeButtonClick(e, null, typeButtons, categoryButtons, categoryWrapper); });
             categoryButtons.addEventListener('click', (e) => { const button = e.target.closest('.category-btn'); if (!button) return; categoryButtons.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); });
-            updateDateDisplay(dateDisplay, dateInput);
+            updateDateDisplay(dateDisplay, dateInput, formDate);
             handleTypeButtonClick(null, 'income', typeButtons, categoryButtons, categoryWrapper);
-            const toggleBtn = view.querySelector('#inline-form-toggle');
-            const content = view.querySelector('#inline-form-content');
-            const chevron = view.querySelector('#inline-form-chevron');
-            content.style.maxHeight = isTransactionFormVisible ? '1000px' : '0';
-            content.style.opacity = isTransactionFormVisible ? '1' : '0';
-            content.style.marginTop = isTransactionFormVisible ? '1rem' : '0';
-            if (chevron) chevron.classList.toggle('rotate-180', !isTransactionFormVisible);
-            if(toggleBtn) toggleBtn.addEventListener('click', () => {
-                isTransactionFormVisible = !isTransactionFormVisible;
-                if (isTransactionFormVisible) { content.style.maxHeight = content.scrollHeight + 'px'; content.style.opacity = '1'; content.style.marginTop = '1rem'; if (chevron) chevron.classList.remove('rotate-180'); }
-                else { content.style.maxHeight = '0'; content.style.opacity = '0'; content.style.marginTop = '0'; if (chevron) chevron.classList.add('rotate-180'); }
-            });
         }
-        function showDatePickerModal() { renderDatePicker(); datePickerModal.classList.remove('hidden'); datePickerModal.querySelector('.modal-enter').classList.add('modal-enter-active'); }
-        function hideDatePickerModal() { datePickerModal.querySelector('.modal-enter').classList.remove('modal-enter-active'); setTimeout(() => datePickerModal.classList.add('hidden'), 300); }
         function renderDatePicker() {
             const grid = document.getElementById('datepicker-grid'); const monthYearEl = document.getElementById('datepicker-month-year');
             const year = datePickerDate.getFullYear(); const month = datePickerDate.getMonth();
@@ -1007,17 +1734,19 @@
             const firstDayOfMonth = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate(); const today = new Date();
             for (let i = 0; i < firstDayOfMonth; i++) grid.appendChild(document.createElement('div'));
             for (let day = 1; day <= daysInMonth; day++) {
-                const dayEl = document.createElement('button'); dayEl.type = 'button'; dayEl.className = 'datepicker-day h-10 w-10 flex items-center justify-center rounded-full hover:bg-muted transition-colors';
+                const dayEl = document.createElement('button'); dayEl.type = 'button'; dayEl.className = 'datepicker-day h-10 w-10 flex items-center justify-center rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors';
                 dayEl.textContent = day; dayEl.dataset.day = day;
                 const thisDate = new Date(year, month, day);
                 if (thisDate.toDateString() === today.toDateString()) dayEl.classList.add('today');
-                if (thisDate.toDateString() === formDate.toDateString()) dayEl.classList.add('selected');
+                if (thisDate.toDateString() === datePickerDate.toDateString()) dayEl.classList.add('selected');
                 grid.appendChild(dayEl);
             }
         }
-        function updateDateDisplay(displayElement, hiddenInput) { displayElement.value = formatShortThaiDate(formDate); hiddenInput.value = toYYYYMMDD(formDate); }
+        function updateDateDisplay(displayElement, hiddenInput, dateToSet) {
+             displayElement.value = formatShortThaiDate(dateToSet);
+             hiddenInput.value = toYYYYMMDD(dateToSet);
+        }
 
-        // --- THEME TOGGLE LOGIC ---
         const themeToggleBtn = document.getElementById('theme-toggle-btn');
         const lightIcon = document.getElementById('theme-toggle-light-icon');
         const darkIcon = document.getElementById('theme-toggle-dark-icon');
@@ -1042,41 +1771,162 @@
             applyTheme(newTheme);
         });
         
-        // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', () => {
             views = document.querySelectorAll('.view');
-            tabButtons = { tracker: document.getElementById('tab-tracker'), weekly: document.getElementById('tab-weekly'), calendar: document.getElementById('tab-calendar'), summary: document.getElementById('tab-summary') };
+            tabButtons = { 
+                tracker: document.getElementById('tab-tracker'), 
+                weekly: document.getElementById('tab-weekly'), 
+                calendar: document.getElementById('tab-calendar'), 
+                summary: document.getElementById('tab-summary'),
+                account: document.getElementById('tab-account') 
+            };
             configButton = document.getElementById('config-btn');
             dailyDetailsModal = document.getElementById('daily-details-modal');
             categoryDetailsModal = document.getElementById('category-details-modal');
             datePickerModal = document.getElementById('date-picker-modal');
+            confirmationModal = document.getElementById('confirmation-modal');
 
+            loadLayout();
+            loadSummaryCardSettings();
+            loadAccountFormVisibility();
             const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             applyTheme(savedTheme);
 
             Object.entries(tabButtons).forEach(([name, btn]) => { if(btn) btn.addEventListener('click', () => switchView(name)); });
-            configButton.addEventListener('click', () => switchView('config'));
-            document.getElementById('close-daily-modal-btn').addEventListener('click', hideDailyDetailsModal);
-            document.getElementById('close-category-modal-btn').addEventListener('click', hideCategoryDetailsModal);
+            
+            configButton.addEventListener('click', () => {
+                switchView('config');
+            });
+
+            document.getElementById('close-daily-modal-btn').addEventListener('click', () => hideModal('daily-details-modal'));
+            document.getElementById('close-category-modal-btn').addEventListener('click', () => hideModal('category-details-modal'));
             document.getElementById('prev-datepicker-month').addEventListener('click', () => { datePickerDate.setMonth(datePickerDate.getMonth() - 1); renderDatePicker(); });
             document.getElementById('next-datepicker-month').addEventListener('click', () => { datePickerDate.setMonth(datePickerDate.getMonth() + 1); renderDatePicker(); });
-            document.getElementById('datepicker-grid').addEventListener('click', (e) => { const dayBtn = e.target.closest('.datepicker-day'); if (dayBtn) { formDate = new Date(datePickerDate.getFullYear(), datePickerDate.getMonth(), parseInt(dayBtn.dataset.day)); renderDatePicker(); } });
-            document.getElementById('today-btn').addEventListener('click', () => { formDate = new Date(); datePickerDate = new Date(); renderDatePicker(); });
-            document.getElementById('cancel-date-btn').addEventListener('click', hideDatePickerModal);
-            document.getElementById('confirm-date-btn').addEventListener('click', () => { updateDateDisplay(document.getElementById('inline-transaction-date-display'), document.getElementById('inline-transaction-date')); hideDatePickerModal(); });
-            document.getElementById('category-filter-buttons').addEventListener('click', (e) => { const button = e.target.closest('.category-filter-btn'); if (!button) return; const category = button.dataset.category; document.querySelectorAll('#category-filter-buttons .category-filter-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); renderFilteredCategoryTransactions(category, currentModalType); });
-            document.getElementById('config-view').addEventListener('click', (e) => {
-                const delCatBtn = e.target.closest('.delete-category-btn'); if (delCatBtn) { deleteCategory(delCatBtn.dataset.type, delCatBtn.dataset.id); return; }
-                const toggleIncome = e.target.closest('#toggle-income-chart-config'); if (toggleIncome) { setChartVisibility('Income', toggleIncome.checked); return; }
-                const toggleExpense = e.target.closest('#toggle-expense-chart-config'); if (toggleExpense) { setChartVisibility('Expense', toggleExpense.checked); return; }
+            document.getElementById('datepicker-grid').addEventListener('click', (e) => { const dayBtn = e.target.closest('.datepicker-day'); if (dayBtn) { datePickerDate = new Date(datePickerDate.getFullYear(), datePickerDate.getMonth(), parseInt(dayBtn.dataset.day)); renderDatePicker(); } });
+            document.getElementById('today-btn').addEventListener('click', () => { datePickerDate = new Date(); renderDatePicker(); });
+            document.getElementById('cancel-date-btn').addEventListener('click', () => hideModal('date-picker-modal'));
+            document.getElementById('confirm-date-btn').addEventListener('click', () => {
+                if (datePickerFor === 'transaction') {
+                    formDate = new Date(datePickerDate);
+                    const formDateDisplay = document.querySelector('#inline-transaction-date-display');
+                    const formDateInput = document.querySelector('#inline-transaction-date');
+                    if (formDateDisplay && formDateInput) {
+                        updateDateDisplay(formDateDisplay, formDateInput, formDate);
+                    }
+                } else if (datePickerFor === 'account') {
+                    accountStartDate = new Date(datePickerDate);
+                    const accountDateDisplay = document.querySelector('#account-start-date-display');
+                    const accountDateInput = document.querySelector('#account-start-date');
+                    if (accountDateDisplay && accountDateInput) {
+                        updateDateDisplay(accountDateDisplay, accountDateInput, accountStartDate);
+                    }
+                }
+                hideModal('date-picker-modal');
             });
-            document.getElementById('add-income-category-btn').addEventListener('click', () => addCategory('income'));
-            document.getElementById('add-expense-category-btn').addEventListener('click', () => addCategory('expense'));
-            onValue(ref(db, 'transactions'), (snapshot) => { allTransactions = snapshot.val() || {}; renderCurrentView(); });
-            onValue(ref(db, 'config/incomeCategories'), (snapshot) => { incomeCategories = snapshot.val() || {}; if(currentView === 'config') renderConfigView(); });
-            onValue(ref(db, 'config/expenseCategories'), (snapshot) => { expenseCategories = snapshot.val() || {}; if(currentView === 'config') renderConfigView(); });
+            
+            document.getElementById('content-area').addEventListener('click', (e) => {
+                const categoryFilterBtn = e.target.closest('.category-filter-btn');
+                if(categoryFilterBtn) {
+                    const category = categoryFilterBtn.dataset.category; 
+                    document.querySelectorAll('#category-filter-buttons .category-filter-btn').forEach(btn => btn.classList.remove('active')); 
+                    categoryFilterBtn.classList.add('active'); 
+                    renderFilteredCategoryTransactions(category);
+                    return;
+                }
 
-            switchView('tracker');
+                const categorySummaryItem = e.target.closest('.category-summary-item');
+                if (categorySummaryItem) {
+                    handleCategorySummaryClick(e);
+                    return;
+                }
+
+                const configView = e.target.closest('#config-view');
+                if(configView) {
+                    const delCatBtn = e.target.closest('.delete-category-btn'); if (delCatBtn) { deleteCategory(delCatBtn.dataset.type, delCatBtn.dataset.id); return; }
+                
+                    const switchAccountItem = e.target.closest('[data-account-id]');
+                    if (switchAccountItem) {
+                        selectedAccountId = switchAccountItem.dataset.accountId;
+                        localStorage.setItem('selectedAccountId', selectedAccountId);
+                        renderConfigView();
+                        renderCurrentView();
+                        return;
+                    }
+
+                    const toggle = e.target.closest('.widget-toggle, #toggle-income-chart-config, #toggle-expense-chart-config, .summary-card-toggle');
+                    if (toggle) {
+                        if (toggle.id === 'toggle-income-chart-config') {
+                            setChartVisibility('Income', toggle.checked);
+                        } else if (toggle.id === 'toggle-expense-chart-config') {
+                            setChartVisibility('Expense', toggle.checked);
+                        } else if (toggle.classList.contains('widget-toggle')) {
+                            dashboardWidgets[toggle.dataset.key].visible = toggle.checked;
+                            saveLayout();
+                        } else if (toggle.classList.contains('summary-card-toggle')) {
+                            summaryCardSettings[toggle.dataset.key].visible = toggle.checked;
+                            saveSummaryCardSettings();
+                        }
+                        return;
+                    }
+
+                    const reorderBtn = e.target.closest('.reorder-btn');
+                    if (reorderBtn) {
+                        const key = reorderBtn.dataset.key;
+                        const direction = reorderBtn.dataset.direction;
+                        const keys = Object.keys(dashboardWidgets);
+                        const index = keys.indexOf(key);
+                        
+                        if (direction === 'up' && index > 0) {
+                            [keys[index], keys[index - 1]] = [keys[index - 1], keys[index]];
+                        } else if (direction === 'down' && index < keys.length - 1) {
+                            [keys[index], keys[index + 1]] = [keys[index + 1], keys[index]];
+                        }
+
+                        const newOrderedWidgets = {};
+                        keys.forEach(k => {
+                            newOrderedWidgets[k] = dashboardWidgets[k];
+                        });
+                        dashboardWidgets = newOrderedWidgets;
+                        saveLayout();
+                        renderConfigView();
+                        return;
+                    }
+                }
+            });
+
+            document.getElementById('cancel-confirmation-btn').addEventListener('click', () => hideModal('confirmation-modal'));
+            document.getElementById('confirm-confirmation-btn').addEventListener('click', () => {
+                if (typeof confirmAction === 'function') {
+                    confirmAction();
+                }
+                hideModal('confirmation-modal');
+            });
+            
+            // Firebase Listeners
+            onValue(ref(db, 'accounts'), (snapshot) => {
+                allAccounts = snapshot.val() || {};
+                const accountKeys = Object.keys(allAccounts);
+                if (!selectedAccountId || !allAccounts[selectedAccountId]) {
+                    selectedAccountId = accountKeys.length > 0 ? accountKeys[0] : null;
+                    localStorage.setItem('selectedAccountId', selectedAccountId);
+                }
+                renderCurrentView();
+            });
+            onValue(ref(db, 'transactions'), (snapshot) => { 
+                allTransactions = snapshot.val() || {}; 
+                renderCurrentView(); 
+            });
+            onValue(ref(db, 'config/incomeCategories'), (snapshot) => { 
+                incomeCategories = snapshot.val() || {}; 
+                if(currentView === 'config') renderConfigView(); 
+            });
+            onValue(ref(db, 'config/expenseCategories'), (snapshot) => { 
+                expenseCategories = snapshot.val() || {}; 
+                if(currentView === 'config') renderConfigView(); 
+            });
+
+            const lastView = localStorage.getItem('lastView') || 'tracker';
+            switchView(lastView);
         });
     </script>
 </body>
