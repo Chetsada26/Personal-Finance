@@ -1,16 +1,20 @@
 <!DOCTYPE html>
+<!-- Add class="dark" to enable dark mode by default -->
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แอปบันทึกรายรับ-รายจ่าย (Glass UI)</title>
     
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <link rel="icon" href="icon.png">
     
+    <!-- Chart.js for charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -175,6 +179,7 @@
 </head>
 <body class="bg-background text-foreground">
 
+    <!-- Header with Theme Toggle -->
     <div class="fixed top-0 left-0 right-0 z-20">
         <div class="container mx-auto p-3">
             <div class="glass-card p-3 flex justify-between items-center gap-4">
@@ -195,7 +200,9 @@
     </div>
 
     <div class="container mx-auto p-4 max-w-7xl relative pt-24 pb-28">
+        <!-- Main Content Area -->
         <main id="content-area">
+            <!-- Views will be injected here -->
             <div id="tracker-view" class="view"></div>
             <div id="weekly-view" class="view hidden"></div>
             <div id="calendar-view" class="view hidden"></div>
@@ -205,6 +212,7 @@
         </main>
     </div>
     
+    <!-- Bottom Navigation -->
     <div class="fixed bottom-0 left-0 right-0 p-3 z-20">
         <div class="glass-card flex justify-around items-center max-w-lg mx-auto p-2 !rounded-full">
             <button id="tab-tracker" class="tab-button flex flex-col items-center w-full py-2 px-2 text-muted-foreground rounded-full transition-all duration-300">
@@ -230,7 +238,13 @@
         </div>
     </div>
 
-    <div id="daily-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
+    <!-- 
+      Modal z-index hierarchy:
+      - Base Modals (Details, Edit): z-30
+      - Confirmation Modal: z-40
+      - Date Picker Modal: z-50 (Topmost)
+    -->
+    <div id="daily-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-30 p-4">
         <div class="glass-card p-6 sm:p-8 w-full max-w-lg max-h-[90vh] flex flex-col modal-enter !rounded-3xl">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="daily-modal-title" class="text-2xl font-bold text-foreground">รายการ</h2>
@@ -242,7 +256,7 @@
         </div>
     </div>
     
-    <div id="category-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
+    <div id="category-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-30 p-4">
         <div class="glass-card p-6 sm:p-8 w-full max-w-2xl max-h-[90vh] flex flex-col modal-enter !rounded-3xl">
             <div class="flex justify-between items-center mb-2 flex-shrink-0">
                 <h2 id="category-modal-title" class="text-2xl font-bold text-foreground">รายการ</h2>
@@ -276,7 +290,7 @@
         </div>
     </div>
 
-    <div id="confirmation-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
+    <div id="confirmation-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-40 p-4">
         <div class="glass-card p-6 sm:p-8 w-full max-w-md modal-enter text-center !rounded-3xl">
             <div id="confirmation-modal-icon-wrapper" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-rose-500/20 mb-4">
                  <svg id="confirmation-modal-icon-warning" class="h-8 w-8 text-rose-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -295,7 +309,8 @@
         </div>
     </div>
     
-    <div id="edit-transaction-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
+    <!-- Edit Transaction Modal -->
+    <div id="edit-transaction-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-30 p-4">
         <div class="glass-card p-6 sm:p-8 w-full max-w-lg max-h-[90vh] flex flex-col modal-enter !rounded-3xl">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold text-foreground">แก้ไขรายการ</h2>
@@ -340,6 +355,7 @@
     </div>
 
 
+    <!-- Firebase SDK & App Logic -->
     <script type="module">
         // Import functions from the Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -1091,22 +1107,30 @@
                     const accountEl = document.createElement('div');
                     accountEl.className = 'flex justify-between items-center bg-black/5 dark:bg-white/5 p-4 rounded-2xl';
                     accountEl.innerHTML = `
-                        <div>
-                            <p class="font-semibold text-foreground">${account.accountName}</p>
-                            <p class="text-sm text-muted-foreground">${account.accountType}</p>
-                        </div>
-                        <div class="flex items-center">
-                            <div class="text-right">
-                                <p class="font-bold text-lg ${balance >= 0 ? 'text-foreground' : 'text-rose-500'}">${formatCurrency(balance)}</p>
-                                <p class="text-xs text-muted-foreground">ยอดคงเหลือ</p>
-                            </div>
-                            <button data-id="${id}" data-name="${account.accountName}" class="delete-account-btn p-2 ml-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                            </button>
-                        </div>
-                    `;
-                    accountListEl.appendChild(accountEl);
-                });
+        <div class="flex items-center gap-3">
+            <!-- Account Icon -->
+            <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary mr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            </span>
+            <div>
+                <p class="font-semibold text-foreground">${account.accountName}</p>
+                <p class="text-sm text-muted-foreground">${account.accountType}</p>
+            </div>
+        </div>
+        <div class="flex items-center">
+            <div class="text-right">
+                <p class="font-bold text-lg ${balance >= 0 ? 'text-foreground' : 'text-rose-500'}">${formatCurrency(balance)}</p>
+                <p class="text-xs text-muted-foreground">ยอดคงเหลือ</p>
+            </div>
+            <button data-id="${id}" data-name="${account.accountName}" class="delete-account-btn p-2 ml-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+            </button>
+        </div>
+    `;
+    accountListEl.appendChild(accountEl);
+});
             }
 
             view.querySelector('#add-account-form').addEventListener('submit', addAccount);
@@ -1122,6 +1146,14 @@
                         <div class="glass-card p-6">
                             <h3 class="text-xl font-semibold mb-4 text-foreground">สลับบัญชี</h3>
                             <div id="account-switcher-list" class="space-y-2"></div>
+                        </div>
+                         <div class="glass-card p-6">
+                            <h3 class="text-xl font-semibold mb-4 text-foreground">จัดการข้อมูล</h3>
+                            <button id="export-csv-btn" class="w-full bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 font-semibold transition-colors flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
+                                <span>ส่งออกข้อมูลเป็น CSV</span>
+                            </button>
+                            <p class="text-xs text-muted-foreground mt-2 text-center">สำหรับนำเข้าไปยัง Google Sheets หรือโปรแกรมอื่นๆ</p>
                         </div>
                     </div>
                     <div class="lg:col-span-2 space-y-6">
@@ -1238,7 +1270,7 @@
                     <span class="font-medium text-foreground">${setting.name}</span>
                     <label for="toggle-summary-${key}" class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="toggle-summary-${key}" data-key="${key}" class="sr-only peer summary-card-toggle" ${setting.visible ? 'checked' : ''}>
-                        <div class="w-11 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-primary dark:peer-focus:ring-pink-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-pink-500"></div>
+                        <div class="w-11 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-primary dark:peer-focus:ring-pink-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-pink-500"></div>
                     </label>
                 `;
                 summaryCardManager.appendChild(itemEl);
@@ -1452,18 +1484,16 @@
             const confirmBtn = document.getElementById('confirm-confirmation-btn');
             const cancelBtn = document.getElementById('cancel-confirmation-btn');
             
-            const iconWrapper = document.getElementById('confirmation-modal-icon-wrapper');
-            const warningIcon = document.getElementById('confirmation-modal-icon-warning');
-            const infoIcon = document.getElementById('confirmation-modal-icon-info');
-
             if (type === 'info') {
                 iconWrapper.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-500/20 mb-4';
                 warningIcon.classList.add('hidden');
                 infoIcon.classList.remove('hidden');
+                confirmBtn.className = 'w-full px-6 py-3 rounded-xl bg-blue-500 text-white hover:opacity-90 transition-opacity font-semibold';
             } else { // default to warning
                 iconWrapper.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-rose-500/20 mb-4';
                 warningIcon.classList.remove('hidden');
                 infoIcon.classList.add('hidden');
+                confirmBtn.className = 'w-full px-6 py-3 rounded-xl bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity font-semibold';
             }
 
             if (onConfirm) {
@@ -1702,6 +1732,73 @@
             showConfirmationModal('ยืนยันการลบ', 'คุณแน่ใจหรือไม่ว่าต้องการลบหมวดหมู่นี้?', () => {
                 remove(ref(db, `config/${type}Categories/${id}`));
             }, 'warning');
+        }
+
+        function escapeCSV(field) {
+            if (field === null || field === undefined) {
+                return '';
+            }
+            let str = String(field);
+            if (str.search(/("|,|\n)/g) >= 0) {
+                str = '"' + str.replace(/"/g, '""') + '"';
+            }
+            return str;
+        }
+
+        function exportToCSV() {
+            if (!selectedAccountId) {
+                showConfirmationModal('ไม่มีบัญชี', 'กรุณาเลือกบัญชีที่จะส่งออกก่อน', null, 'info');
+                return;
+            }
+
+            const accountTransactions = Object.values(allTransactions).filter(t => t.accountId === selectedAccountId);
+
+            if (accountTransactions.length === 0) {
+                showConfirmationModal('ไม่มีข้อมูล', `ไม่พบรายการธุรกรรมในบัญชี "${allAccounts[selectedAccountId]?.accountName || 'ที่เลือก'}" ที่จะส่งออก`, null, 'info');
+                return;
+            }
+
+            const headers = [
+                'Date', 'Description', 'Amount', 'Type', 'Category', 'AccountName'
+            ];
+
+            const rows = accountTransactions.map(t => {
+                const accountName = allAccounts[t.accountId] ? allAccounts[t.accountId].accountName : 'N/A';
+                return [
+                    t.date,
+                    t.description,
+                    t.amount,
+                    t.type,
+                    t.category,
+                    accountName
+                ].map(escapeCSV).join(',');
+            });
+
+            const finalBalance = calculateBalance(selectedAccountId);
+
+            const balanceRow = [
+                '', // Date
+                'ยอดคงเหลือ (Balance)', // Description
+                finalBalance, // Amount
+                '', // Type
+                '', // Category
+                ''  // AccountName
+            ].map(escapeCSV).join(',');
+            
+            const emptyRow = ",,,,,";
+
+            const csvContent = [headers.join(','), ...rows, emptyRow, balanceRow].join('\n');
+            const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            const dateStr = new Date().toISOString().slice(0, 10);
+            const accountNameForFile = allAccounts[selectedAccountId] ? allAccounts[selectedAccountId].accountName.replace(/[^a-z0-9]/gi, '_') : 'export';
+            link.setAttribute("download", `finance-export-${accountNameForFile}-${dateStr}.csv`);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
         
         // --- EVENT HANDLERS ---
@@ -2006,7 +2103,11 @@
 
                 const configView = e.target.closest('#config-view');
                 if(configView) {
-                    const delCatBtn = e.target.closest('.delete-category-btn'); if (delCatBtn) { deleteCategory(delCatBtn.dataset.type, delCatBtn.dataset.id); return; }
+                    const delCatBtn = e.target.closest('.delete-category-btn'); 
+                    if (delCatBtn) { 
+                        deleteCategory(delCatBtn.dataset.type, delCatBtn.dataset.id); 
+                        return; 
+                    }
                 
                     const switchAccountItem = e.target.closest('[data-account-id]');
                     if (switchAccountItem) {
@@ -2014,6 +2115,16 @@
                         localStorage.setItem('selectedAccountId', selectedAccountId);
                         renderConfigView();
                         renderCurrentView();
+                        return;
+                    }
+
+                    if (e.target.closest('#export-csv-btn')) {
+                        showConfirmationModal(
+                            'ยืนยันการส่งออก',
+                            'คุณต้องการส่งออกข้อมูลธุรกรรมทั้งหมดเป็นไฟล์ CSV หรือไม่?',
+                            () => { exportToCSV(); },
+                            'info'
+                        );
                         return;
                     }
 
@@ -2095,3 +2206,4 @@
     </script>
 </body>
 </html>
+
