@@ -1,20 +1,16 @@
 <!DOCTYPE html>
-<!-- Add class="dark" to enable dark mode by default -->
 <html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>แอปบันทึกรายรับ-รายจ่าย (Glass UI)</title>
     
-    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <link rel="icon" href="icon.png">
     
-    <!-- Chart.js for charts -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
-    <!-- Google Fonts: Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -169,6 +165,8 @@
       .type-btn.active { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
       .category-btn.active { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border-color: hsl(var(--primary)); }
       .category-filter-btn.active { background-color: hsl(var(--primary)); color: hsl(var(--primary-foreground)); border-color: hsl(var(--primary)); }
+      .export-option-btn.active { background-color: hsl(var(--card)); color: hsl(var(--foreground)); box-shadow: 0 2px 8px -1px rgba(0,0,0,0.1); }
+
 
       .datepicker-day.selected { background-color: hsl(var(--primary)) !important; color: hsl(var(--primary-foreground)) !important; }
       .datepicker-day.today { border: 2px solid hsl(var(--primary)); }
@@ -179,7 +177,6 @@
 </head>
 <body class="bg-background text-foreground">
 
-    <!-- Header with Theme Toggle -->
     <div class="fixed top-0 left-0 right-0 z-20">
         <div class="container mx-auto p-3">
             <div class="glass-card p-3 flex justify-between items-center gap-4">
@@ -200,21 +197,19 @@
     </div>
 
     <div class="container mx-auto p-4 max-w-7xl relative pt-24 pb-28">
-        <!-- Main Content Area -->
         <main id="content-area">
-            <!-- Views will be injected here -->
             <div id="tracker-view" class="view"></div>
             <div id="weekly-view" class="view hidden"></div>
             <div id="calendar-view" class="view hidden"></div>
+            <div id="category-summary-view" class="view hidden"></div>
             <div id="summary-view" class="view hidden"></div>
             <div id="account-view" class="view hidden"></div>
             <div id="config-view" class="view hidden"></div>
         </main>
     </div>
     
-    <!-- Bottom Navigation -->
     <div class="fixed bottom-0 left-0 right-0 p-3 z-20">
-        <div class="glass-card flex justify-around items-center max-w-lg mx-auto p-2 !rounded-full">
+        <div class="glass-card flex justify-around items-center max-w-2xl mx-auto p-2 !rounded-full">
             <button id="tab-tracker" class="tab-button flex flex-col items-center w-full py-2 px-2 text-muted-foreground rounded-full transition-all duration-300">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg>
                 <span class="text-xs font-medium">แดชบอร์ด</span>
@@ -227,6 +222,10 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                 <span class="text-xs font-medium">ปฏิทิน</span>
             </button>
+            <button id="tab-category-summary" class="tab-button flex flex-col items-center w-full py-2 px-2 text-muted-foreground rounded-full transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A2 2 0 013 8v-5c0-1.1.9-2 2-2z" /></svg>
+                <span class="text-xs font-medium">วิเคราะห์</span>
+            </button>
             <button id="tab-summary" class="tab-button flex flex-col items-center w-full py-2 px-2 text-muted-foreground rounded-full transition-all duration-300">
                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
                 <span class="text-xs font-medium">สรุปรายปี</span>
@@ -238,13 +237,7 @@
         </div>
     </div>
 
-    <!-- 
-      Modal z-index hierarchy:
-      - Base Modals (Details, Edit): z-30
-      - Confirmation Modal: z-40
-      - Date Picker Modal: z-50 (Topmost)
-    -->
-    <div id="daily-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-30 p-4">
+    <div id="daily-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
         <div class="glass-card p-6 sm:p-8 w-full max-w-lg max-h-[90vh] flex flex-col modal-enter !rounded-3xl">
             <div class="flex justify-between items-center mb-4">
                 <h2 id="daily-modal-title" class="text-2xl font-bold text-foreground">รายการ</h2>
@@ -256,7 +249,7 @@
         </div>
     </div>
     
-    <div id="category-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-30 p-4">
+    <div id="category-details-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
         <div class="glass-card p-6 sm:p-8 w-full max-w-2xl max-h-[90vh] flex flex-col modal-enter !rounded-3xl">
             <div class="flex justify-between items-center mb-2 flex-shrink-0">
                 <h2 id="category-modal-title" class="text-2xl font-bold text-foreground">รายการ</h2>
@@ -265,7 +258,7 @@
                 </button>
             </div>
             <div id="category-modal-total" class="text-center mb-4 pb-4 border-b border-border"></div>
-            <div id="category-filter-container" class="mb-4 flex-shrink-0 overflow-x-auto pb-2">
+            <div id="category-filter-container" class="mb-4 flex-shrink-0 overflow-x-auto pb-2 no-scrollbar">
                 <div id="category-filter-buttons" class="flex items-center gap-2"></div>
             </div>
             <div id="category-transaction-list" class="space-y-3 overflow-y-auto no-scrollbar flex-grow"></div>
@@ -290,7 +283,7 @@
         </div>
     </div>
 
-    <div id="confirmation-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-40 p-4">
+    <div id="confirmation-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-50 p-4">
         <div class="glass-card p-6 sm:p-8 w-full max-w-md modal-enter text-center !rounded-3xl">
             <div id="confirmation-modal-icon-wrapper" class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-rose-500/20 mb-4">
                  <svg id="confirmation-modal-icon-warning" class="h-8 w-8 text-rose-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
@@ -308,54 +301,7 @@
             </div>
         </div>
     </div>
-    
-    <!-- Edit Transaction Modal -->
-    <div id="edit-transaction-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center hidden z-30 p-4">
-        <div class="glass-card p-6 sm:p-8 w-full max-w-lg max-h-[90vh] flex flex-col modal-enter !rounded-3xl">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-foreground">แก้ไขรายการ</h2>
-                <button id="close-edit-modal-btn" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-            </div>
-            <form id="edit-transaction-form" class="overflow-y-auto no-scrollbar flex-grow">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-muted-foreground mb-2 text-sm font-medium">ประเภท</label>
-                        <div id="edit-transaction-type-buttons" class="grid grid-cols-3 gap-1 rounded-xl bg-black/10 dark:bg-white/10 p-1">
-                            <button type="button" data-value="income" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">รายรับ</button>
-                            <button type="button" data-value="expense" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">รายจ่าย</button>
-                            <button type="button" data-value="savings" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">ออม</button>
-                        </div>
-                    </div>
-                    <div>
-                        <label for="edit-transaction-description" class="block text-muted-foreground mb-2 text-sm font-medium">คำอธิบาย</label>
-                        <input type="text" id="edit-transaction-description" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required>
-                    </div>
-                    <div>
-                        <label for="edit-transaction-amount" class="block text-muted-foreground mb-2 text-sm font-medium">จำนวนเงิน</label>
-                        <input type="number" id="edit-transaction-amount" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required min="0" step="0.01">
-                    </div>
-                    <div>
-                        <label for="edit-transaction-date-display" class="block text-muted-foreground mb-2 text-sm font-medium">วันที่</label>
-                        <input type="text" id="edit-transaction-date-display" readonly class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition cursor-pointer" required>
-                        <input type="hidden" id="edit-transaction-date">
-                    </div>
-                    <div id="edit-category-wrapper" class="md:col-span-2">
-                        <label class="block text-muted-foreground mb-2 text-sm font-medium">หมวดหมู่</label>
-                        <div id="edit-transaction-category-buttons" class="flex flex-wrap gap-2"></div>
-                    </div>
-                </div>
-                <div class="flex gap-4 mt-6">
-                    <button type="button" id="cancel-edit-btn" class="w-full px-6 py-3 rounded-xl bg-black/10 dark:bg-white/10 hover:bg-black/20 dark:hover:bg-white/20 transition-colors font-semibold">ยกเลิก</button>
-                    <button type="submit" class="w-full bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:opacity-90 font-semibold transition-opacity">บันทึกการเปลี่ยนแปลง</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
-
-    <!-- Firebase SDK & App Logic -->
     <script type="module">
         // Import functions from the Firebase SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -385,8 +331,6 @@
         let currentCalendarDate = new Date();
         let currentYear = new Date().getFullYear();
         let formDate = new Date();
-        let editFormDate = new Date(); // For edit modal
-        let editingTransactionId = null; // For edit modal
         let accountStartDate = new Date();
         let datePickerDate = new Date();
         let datePickerFor = null;
@@ -401,11 +345,18 @@
         let currentModalType = '';
         let confirmAction = null; 
         let isAddAccountFormVisible = true;
+        let isAddItemFormVisible = true;
+        let lastUsedCategories = { income: null, expense: null };
+        
+        // State for new Category Summary View
+        let categorySummaryScope = 'monthly';
+        let categorySummaryDate = new Date();
+
         
         let dashboardWidgets = {
             summary: { name: 'สรุปยอด', visible: true, template: getSummaryWidgetTemplate },
-            categorySummary: { name: 'สรุปตามหมวดหมู่', visible: true, template: getCategorySummaryWidgetTemplate },
             form: { name: 'เพิ่มรายการ', visible: true, template: getFormWidgetTemplate },
+            categorySummary: { name: 'สรุปหมวดหมู่', visible: true, template: getCategorySummaryWidgetTemplate },
             charts: { name: 'กราฟ', visible: true, template: getChartsWidgetTemplate },
             list: { name: 'รายการล่าสุด', visible: true, template: getListWidgetTemplate }
         };
@@ -418,7 +369,7 @@
         };
 
         // --- DOM ELEMENTS ---
-        let views, tabButtons, dailyDetailsModal, configButton, categoryDetailsModal, datePickerModal, confirmationModal, editTransactionModal;
+        let views, tabButtons, dailyDetailsModal, configButton, categoryDetailsModal, datePickerModal, confirmationModal;
 
         // --- HELPER FUNCTIONS ---
         const formatCurrency = (amount) => `฿${parseFloat(amount || 0).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
@@ -443,9 +394,23 @@
             return formatShortThaiDate(date);
         };
         const toYYYYMMDD = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        const getChartVisibility = (type) => localStorage.getItem(`show${type}Chart`) === null ? true : localStorage.getItem(`show${type}Chart`) === 'true';
-        const setChartVisibility = (type, isVisible) => localStorage.setItem(`show${type}Chart`, isVisible);
+        const formatCSVDate = (dateString) => {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear() + 543;
+            return `${day}/${month}/${year}`;
+        };
 
+        function applyUiScale(scale) {
+            document.body.style.zoom = `${scale / 100}`;
+        }
+
+        function loadUiScale() {
+            const savedScale = localStorage.getItem('uiScale') || '100';
+            applyUiScale(parseInt(savedScale, 10));
+        }
 
         // --- LAYOUT & SETTINGS MANAGEMENT ---
         function loadLayout() {
@@ -475,6 +440,23 @@
             localStorage.setItem('dashboardLayout', JSON.stringify(dashboardWidgets));
         }
 
+        function loadAddItemFormVisibility() {
+            const savedState = localStorage.getItem('isAddItemFormVisible');
+            isAddItemFormVisible = savedState === null ? true : savedState === 'true';
+        }
+
+        function loadLastUsedCategories() {
+            const savedCategories = localStorage.getItem('lastUsedCategories');
+            if (savedCategories) {
+                try {
+                    lastUsedCategories = JSON.parse(savedCategories);
+                } catch (e) {
+                    console.error("Failed to parse last used categories from localStorage", e);
+                    lastUsedCategories = { income: null, expense: null };
+                }
+            }
+        }
+
         function loadSummaryCardSettings() {
             const savedSettings = localStorage.getItem('summaryCardSettings');
             if (savedSettings) {
@@ -493,11 +475,6 @@
 
         function saveSummaryCardSettings() {
             localStorage.setItem('summaryCardSettings', JSON.stringify(summaryCardSettings));
-        }
-
-        function loadAccountFormVisibility() {
-            const savedState = localStorage.getItem('isAddAccountFormVisible');
-            isAddAccountFormVisible = savedState === null ? true : savedState === 'true';
         }
 
         // --- TEMPLATE GENERATORS FOR WIDGETS ---
@@ -541,19 +518,10 @@
             
             let gridClass = '';
             switch (visibleCount) {
-                case 1:
-                    gridClass = 'grid-cols-1';
-                    break;
-                case 2:
-                    gridClass = 'grid-cols-2';
-                    break;
-                case 3:
-                    gridClass = 'grid-cols-2 md:grid-cols-3';
-                    break;
-                case 4:
-                default:
-                    gridClass = 'grid-cols-2 md:grid-cols-4';
-                    break;
+                case 1: gridClass = 'grid-cols-1'; break;
+                case 2: gridClass = 'grid-cols-2'; break;
+                case 3: gridClass = 'grid-cols-2 md:grid-cols-3'; break;
+                case 4: default: gridClass = 'grid-cols-2 md:grid-cols-4'; break;
             }
 
             return `
@@ -565,66 +533,71 @@
             `;
         }
 
+        function getFormWidgetTemplate() {
+            return `
+                <div id="form-widget" class="dashboard-widget glass-card p-4 sm:p-6 md:col-span-2">
+                    <div id="add-item-toggle" class="flex justify-between items-center cursor-pointer">
+                        <h3 class="text-xl font-semibold text-foreground">เพิ่มรายการใหม่</h3>
+                        <svg id="add-item-chevron" class="w-6 h-6 transition-transform duration-300 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                    <div id="add-item-form-wrapper" class="overflow-hidden">
+                        <form id="inline-transaction-form" class="pt-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-muted-foreground mb-2 text-sm font-medium">ประเภท</label>
+                                    <div id="inline-transaction-type-buttons" class="grid grid-cols-3 gap-1 rounded-xl bg-black/10 dark:bg-white/10 p-1">
+                                        <button type="button" data-value="income" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">รายรับ</button>
+                                        <button type="button" data-value="expense" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">รายจ่าย</button>
+                                        <button type="button" data-value="savings" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">ออม</button>
+                                    </div>
+                                </div>
+                                <div>
+                                     <label for="inline-transaction-description" class="block text-muted-foreground mb-2 text-sm font-medium">คำอธิบาย</label>
+                                     <input type="text" id="inline-transaction-description" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required>
+                                </div>
+                                <div>
+                                    <label for="inline-transaction-amount" class="block text-muted-foreground mb-2 text-sm font-medium">จำนวนเงิน</label>
+                                    <input type="number" id="inline-transaction-amount" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required min="0" step="0.01">
+                                </div>
+                                <div>
+                                    <label for="inline-transaction-date-display" class="block text-muted-foreground mb-2 text-sm font-medium">วันที่</label>
+                                    <input type="text" id="inline-transaction-date-display" readonly class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition cursor-pointer" required>
+                                    <input type="hidden" id="inline-transaction-date">
+                                </div>
+                                <div id="inline-category-wrapper" class="md:col-span-2">
+                                     <label class="block text-muted-foreground mb-2 text-sm font-medium">หมวดหมู่</label>
+                                     <div id="inline-transaction-category-buttons" class="flex flex-wrap gap-2"></div>
+                                </div>
+                            </div>
+                             <button type="submit" id="add-transaction-btn" class="w-full mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:opacity-90 font-semibold transition-opacity flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
+                                <span>บันทึกรายการ</span>
+                            </button>
+                            <p id="form-account-warning" class="text-center text-rose-400 text-sm mt-2 hidden"></p>
+                        </form>
+                    </div>
+                </div>
+            `;
+        }
+        
         function getCategorySummaryWidgetTemplate() {
             return `
                 <div id="category-summary-widget" class="dashboard-widget md:col-span-2 glass-card p-6">
                     <h3 class="text-xl font-semibold text-foreground mb-4">สรุปตามหมวดหมู่</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <h4 class="font-semibold text-emerald-600 dark:text-emerald-400 mb-2 border-b-2 border-emerald-500/20 pb-1">รายรับ</h4>
-                            <div id="income-category-summary-list" class="space-y-1.5 text-sm"></div>
+                            <h4 class="text-lg font-medium text-emerald-600 dark:text-emerald-400 mb-2">รายรับ</h4>
+                            <div id="dashboard-income-summary-list" class="space-y-3"></div>
                         </div>
                         <div>
-                            <h4 class="font-semibold text-rose-600 dark:text-rose-400 mb-2 border-b-2 border-rose-500/20 pb-1">รายจ่าย</h4>
-                            <div id="expense-category-summary-list" class="space-y-1.5 text-sm"></div>
+                            <h4 class="text-lg font-medium text-rose-600 dark:text-rose-400 mb-2">รายจ่าย</h4>
+                            <div id="dashboard-expense-summary-list" class="space-y-3"></div>
                         </div>
                     </div>
                 </div>
             `;
         }
 
-        function getFormWidgetTemplate() {
-            return `
-                <div id="form-widget" class="dashboard-widget glass-card p-4 sm:p-6 md:col-span-2">
-                    <h3 class="text-xl font-semibold text-foreground mb-4">เพิ่มรายการใหม่</h3>
-                    <form id="inline-transaction-form">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-muted-foreground mb-2 text-sm font-medium">ประเภท</label>
-                                <div id="inline-transaction-type-buttons" class="grid grid-cols-3 gap-1 rounded-xl bg-black/10 dark:bg-white/10 p-1">
-                                    <button type="button" data-value="income" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">รายรับ</button>
-                                    <button type="button" data-value="expense" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">รายจ่าย</button>
-                                    <button type="button" data-value="savings" class="type-btn py-2 px-4 text-sm font-medium rounded-lg transition-all text-muted-foreground">ออม</button>
-                                </div>
-                            </div>
-                            <div>
-                                 <label for="inline-transaction-description" class="block text-muted-foreground mb-2 text-sm font-medium">คำอธิบาย</label>
-                                 <input type="text" id="inline-transaction-description" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required>
-                            </div>
-                            <div>
-                                <label for="inline-transaction-amount" class="block text-muted-foreground mb-2 text-sm font-medium">จำนวนเงิน</label>
-                                <input type="number" id="inline-transaction-amount" class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition" required min="0" step="0.01">
-                            </div>
-                            <div>
-                                <label for="inline-transaction-date-display" class="block text-muted-foreground mb-2 text-sm font-medium">วันที่</label>
-                                <input type="text" id="inline-transaction-date-display" readonly class="w-full p-3 border border-border bg-black/5 dark:bg-white/5 rounded-xl focus:ring-2 focus:ring-ring focus:outline-none transition cursor-pointer" required>
-                                <input type="hidden" id="inline-transaction-date">
-                            </div>
-                            <div id="inline-category-wrapper" class="md:col-span-2">
-                                 <label class="block text-muted-foreground mb-2 text-sm font-medium">หมวดหมู่</label>
-                                 <div id="inline-transaction-category-buttons" class="flex flex-wrap gap-2"></div>
-                            </div>
-                        </div>
-                         <button type="submit" id="add-transaction-btn" class="w-full mt-4 bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:opacity-90 font-semibold transition-opacity flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" /></svg>
-                            <span>บันทึกรายการ</span>
-                        </button>
-                        <p id="form-account-warning" class="text-center text-rose-400 text-sm mt-2 hidden"></p>
-                    </form>
-                </div>
-            `;
-        }
-        
         function getChartsWidgetTemplate() {
             return `
                 <div id="charts-widget" class="dashboard-widget grid md:grid-cols-2 gap-6 md:col-span-2">
@@ -653,7 +626,6 @@
         function switchView(viewName) {
             if (viewName !== 'config') {
                 previousView = currentView;
-                localStorage.setItem('lastView', viewName); // Save the last view
             }
             currentView = viewName;
             views.forEach(v => v.classList.add('hidden'));
@@ -682,6 +654,7 @@
                 case 'tracker': renderDashboardView('tracker-view'); break;
                 case 'weekly': renderDashboardView('weekly-view', true); break;
                 case 'calendar': renderCalendarView(); break;
+                case 'category-summary': renderCategorySummaryView(); break;
                 case 'summary': renderSummaryView(); break;
                 case 'account': renderAccountView(); break;
                 case 'config': renderConfigView(); break;
@@ -699,10 +672,13 @@
                     <div class="flex items-center gap-1">
                         <button id="prev-period" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
                         <button id="next-period" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                        <button id="export-dashboard-csv-btn" class="ml-2 p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors" title="ส่งออกเป็น CSV">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                        </button>
                     </div>
                 </div>
                 <div id="dashboard-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                </div>
+                    </div>
             </div>
             `;
             view.innerHTML = headerHtml;
@@ -716,6 +692,7 @@
                 }
             });
 
+            // Data processing and rendering logic
             const filteredTransactions = selectedAccountId
                 ? Object.entries(allTransactions)
                     .filter(([id, t]) => t.accountId === selectedAccountId)
@@ -748,7 +725,10 @@
             }
             
             view.querySelector('#current-month-year').textContent = title;
+            view.querySelector('#export-dashboard-csv-btn').addEventListener('click', () => exportToCSV(isWeekly ? 'weekly' : 'monthly', dateForPeriod));
 
+
+            // Populate widgets that exist
             if (dashboardWidgets.summary.visible) {
                 let totalIncome = 0, totalExpense = 0, totalSavings = 0;
                 transactions.forEach(t => {
@@ -771,54 +751,6 @@
                 
                 const summaryWidgetEl = view.querySelector('#summary-widget');
                 if (summaryWidgetEl) summaryWidgetEl.addEventListener('click', handleSummaryCardClick);
-            }
-
-            if (dashboardWidgets.categorySummary.visible) {
-                const incomeCategoryTotals = {};
-                const expenseCategoryTotals = {};
-
-                transactions.forEach(t => {
-                    if (t.type === 'income') {
-                        incomeCategoryTotals[t.category] = (incomeCategoryTotals[t.category] || 0) + t.amount;
-                    } else if (t.type === 'expense') {
-                        expenseCategoryTotals[t.category] = (expenseCategoryTotals[t.category] || 0) + t.amount;
-                    }
-                });
-
-                const incomeListEl = view.querySelector('#income-category-summary-list');
-                const expenseListEl = view.querySelector('#expense-category-summary-list');
-
-                if (incomeListEl) {
-                    incomeListEl.innerHTML = '';
-                    if (Object.keys(incomeCategoryTotals).length > 0) {
-                        Object.entries(incomeCategoryTotals).sort((a,b) => b[1] - a[1]).forEach(([category, total]) => {
-                            incomeListEl.innerHTML += `
-                                <div class="category-summary-item flex justify-between items-center cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 p-1.5 rounded-lg transition-colors" data-type="income" data-category="${category}">
-                                    <span class="text-foreground truncate pr-2">${category}</span>
-                                    <span class="font-semibold text-emerald-500 flex-shrink-0">${formatCurrency(total)}</span>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        incomeListEl.innerHTML = '<p class="text-muted-foreground text-xs py-2">ไม่มีรายการ</p>';
-                    }
-                }
-
-                if (expenseListEl) {
-                    expenseListEl.innerHTML = '';
-                    if (Object.keys(expenseCategoryTotals).length > 0) {
-                        Object.entries(expenseCategoryTotals).sort((a,b) => b[1] - a[1]).forEach(([category, total]) => {
-                            expenseListEl.innerHTML += `
-                                <div class="category-summary-item flex justify-between items-center cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 p-1.5 rounded-lg transition-colors" data-type="expense" data-category="${category}">
-                                    <span class="text-foreground truncate pr-2">${category}</span>
-                                    <span class="font-semibold text-rose-500 flex-shrink-0">${formatCurrency(total)}</span>
-                                </div>
-                            `;
-                        });
-                    } else {
-                        expenseListEl.innerHTML = '<p class="text-muted-foreground text-xs py-2">ไม่มีรายการ</p>';
-                    }
-                }
             }
 
             if (dashboardWidgets.form.visible) {
@@ -852,22 +784,32 @@
                     else if (t.type === 'expense') expenseData[t.category] = (expenseData[t.category] || 0) + t.amount;
                 });
 
-                const showIncomeChart = getChartVisibility('Income');
-                const showExpenseChart = getChartVisibility('Expense');
-                const incomeChartCard = view.querySelector('#income-chart-card');
-                const expenseChartCard = view.querySelector('#expense-chart-card');
-                const chartsWidget = view.querySelector('#charts-widget');
-                
-                if(incomeChartCard) incomeChartCard.classList.toggle('hidden', !showIncomeChart);
-                if(expenseChartCard) expenseChartCard.classList.toggle('hidden', !showExpenseChart);
-                
-                if(chartsWidget && !showIncomeChart && !showExpenseChart) {
-                    chartsWidget.classList.add('hidden');
-                } else if (chartsWidget) {
-                    chartsWidget.classList.remove('hidden');
-                }
-
                 renderCharts(incomeData, expenseData, view);
+            }
+            
+            if (dashboardWidgets.categorySummary.visible) {
+                const incomeSummary = {};
+                const expenseSummary = {};
+                let totalPeriodIncome = 0;
+                let totalPeriodExpense = 0;
+
+                transactions.forEach(t => {
+                    if (t.type === 'income') {
+                        incomeSummary[t.category] = (incomeSummary[t.category] || 0) + t.amount;
+                        totalPeriodIncome += t.amount;
+                    } else if (t.type === 'expense') {
+                        expenseSummary[t.category] = (expenseSummary[t.category] || 0) + t.amount;
+                        totalPeriodExpense += t.amount;
+                    }
+                });
+
+                const incomeListEl = view.querySelector('#dashboard-income-summary-list');
+                const expenseListEl = view.querySelector('#dashboard-expense-summary-list');
+
+                if (incomeListEl && expenseListEl) {
+                    renderDashboardCategoryList(incomeListEl, incomeSummary, totalPeriodIncome, 'income');
+                    renderDashboardCategoryList(expenseListEl, expenseSummary, totalPeriodExpense, 'expense');
+                }
             }
         }
 
@@ -914,9 +856,9 @@
                     if(dailyData[day].savings > 0) indicatorsHtml += `<div class="h-1.5 w-1.5 md:h-1 md:w-3/5 rounded-full md:rounded-sm bg-blue-500 dark:bg-blue-400"></div>`;
                 }
                 calendarHtml += `
-                    <div class="calendar-day aspect-square bg-black/5 dark:bg-white/5 rounded-xl flex flex-col justify-between p-2 cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors" data-date="${dateStr}">
-                        <span class="font-semibold text-foreground text-base self-start">${day}</span>
-                        <div class="flex flex-row justify-center items-end gap-1.5 md:flex-col md:items-center md:w-full md:gap-1 pb-1">${indicatorsHtml}</div>
+                    <div class="calendar-day aspect-square bg-black/5 dark:bg-white/5 rounded-xl flex flex-col justify-between items-center p-3 cursor-pointer hover:bg-black/10 dark:hover:bg-white/10 transition-colors" data-date="${dateStr}">
+                        <span class="font-semibold text-foreground text-base">${day}</span>
+                        <div class="flex flex-row justify-center items-center gap-1.5 md:flex-col md:items-center md:w-full md:gap-1">${indicatorsHtml}</div>
                     </div>`;
             }
 
@@ -926,16 +868,190 @@
             view.querySelector('#next-cal-month').addEventListener('click', () => { currentCalendarDate.setMonth(month + 1); renderCalendarView(); });
             view.querySelector('#calendar-grid').addEventListener('click', handleCalendarDayClick);
         }
+
+        function renderCategorySummaryView() {
+            const view = document.getElementById('category-summary-view');
+            const date = categorySummaryDate;
+            const scope = categorySummaryScope;
+
+            view.innerHTML = `
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex flex-col sm:flex-row items-center justify-between mb-4 px-2 gap-4">
+                        <h2 class="text-2xl font-bold text-foreground">วิเคราะห์ข้อมูล</h2>
+                        <div id="category-summary-scope-btns" class="flex items-center bg-black/10 dark:bg-white/10 p-1 rounded-full">
+                            <button data-scope="monthly" class="px-4 py-1.5 text-sm font-semibold rounded-full transition-colors">รายเดือน</button>
+                            <button data-scope="weekly" class="px-4 py-1.5 text-sm font-semibold rounded-full transition-colors">รายสัปดาห์</button>
+                            <button data-scope="yearly" class="px-4 py-1.5 text-sm font-semibold rounded-full transition-colors">รายปี</button>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-center mb-6 px-2 gap-4">
+                        <button id="prev-cat-summary-period" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                        </button>
+                        <h3 id="cat-summary-period-title" class="text-xl font-bold text-foreground text-center w-64"></h3>
+                        <button id="next-cat-summary-period" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div>
+                            <h3 class="text-xl font-semibold text-emerald-600 dark:text-emerald-400 mb-4 px-2">สรุปรายรับ</h3>
+                            <div id="income-category-summary-list" class="space-y-4"></div>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-rose-600 dark:text-rose-400 mb-4 px-2">สรุปรายจ่าย</h3>
+                            <div id="expense-category-summary-list" class="space-y-4"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            view.querySelector(`#category-summary-scope-btns button[data-scope="${scope}"]`).classList.add('bg-background', 'text-foreground', 'shadow-md');
+
+            let transactions, title;
+            const filteredTransactions = selectedAccountId
+                ? Object.entries(allTransactions)
+                    .filter(([id, t]) => t.accountId === selectedAccountId)
+                    .map(([id, t]) => ({ id, ...t }))
+                : [];
+
+            if (scope === 'weekly') {
+                const startOfWeek = new Date(date);
+                startOfWeek.setHours(0, 0, 0, 0);
+                startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(endOfWeek.getDate() + 6);
+                endOfWeek.setHours(23, 59, 59, 999);
+                transactions = filteredTransactions.filter(t => {
+                    const tDate = new Date(t.date + 'T00:00:00');
+                    return tDate >= startOfWeek && tDate <= endOfWeek;
+                });
+                title = `สัปดาห์: ${formatShortThaiDate(startOfWeek)} - ${formatShortThaiDate(endOfWeek)}`;
+            } else if (scope === 'monthly') {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+                transactions = filteredTransactions.filter(t => t.date && t.date.startsWith(monthStr));
+                title = `${getThaiMonthName(month)} ${year + 543}`;
+            } else { // yearly
+                const year = date.getFullYear();
+                transactions = filteredTransactions.filter(t => t.date && new Date(t.date).getFullYear() === year);
+                title = `ปี ${year + 543}`;
+            }
+
+            view.querySelector('#cat-summary-period-title').textContent = title;
+
+            const incomeSummary = {};
+            const expenseSummary = {};
+            let totalPeriodIncome = 0;
+            let totalPeriodExpense = 0;
+
+            transactions.forEach(t => {
+                if (t.type === 'income') {
+                    if (!incomeSummary[t.category]) incomeSummary[t.category] = { total: 0, count: 0 };
+                    incomeSummary[t.category].total += t.amount;
+                    incomeSummary[t.category].count++;
+                    totalPeriodIncome += t.amount;
+                } else if (t.type === 'expense') {
+                    if (!expenseSummary[t.category]) expenseSummary[t.category] = { total: 0, count: 0 };
+                    expenseSummary[t.category].total += t.amount;
+                    expenseSummary[t.category].count++;
+                    totalPeriodExpense += t.amount;
+                }
+            });
+
+            const incomeListEl = view.querySelector('#income-category-summary-list');
+            const expenseListEl = view.querySelector('#expense-category-summary-list');
+            
+            const renderSummaryList = (container, summaryData, totalAmount, type) => {
+                container.innerHTML = '';
+                if (Object.keys(summaryData).length === 0 || totalAmount === 0) {
+                    container.innerHTML = '<div class="glass-card p-6 text-center text-muted-foreground">ไม่มีข้อมูล</div>';
+                    return;
+                }
+                
+                const sortedCategories = Object.entries(summaryData).sort(([,a], [,b]) => b.total - a.total);
+                
+                sortedCategories.forEach(([category, data]) => {
+                    const percentage = (data.total / totalAmount) * 100;
+                    const card = document.createElement('div');
+                    card.className = 'glass-card p-4 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all';
+                    card.dataset.category = category;
+                    card.dataset.type = type;
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-semibold text-foreground">${category}</span>
+                            <span class="font-bold text-lg text-${type === 'income' ? 'emerald' : 'rose'}-500">${formatCurrency(data.total)}</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm text-muted-foreground">
+                            <span>${data.count} รายการ</span>
+                            <span>${percentage.toFixed(1)}%</span>
+                        </div>
+                        <div class="w-full bg-black/10 dark:bg-white/10 rounded-full h-2.5 mt-2">
+                            <div class="bg-${type === 'income' ? 'emerald' : 'rose'}-500 h-2.5 rounded-full" style="width: ${percentage}%"></div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            };
+
+            renderSummaryList(incomeListEl, incomeSummary, totalPeriodIncome, 'income');
+            renderSummaryList(expenseListEl, expenseSummary, totalPeriodExpense, 'expense');
+
+            view.querySelector('#category-summary-scope-btns').addEventListener('click', (e) => {
+                const button = e.target.closest('button');
+                if (button && button.dataset.scope) {
+                    categorySummaryScope = button.dataset.scope;
+                    categorySummaryDate = new Date(); // Reset date when scope changes
+                    renderCategorySummaryView();
+                }
+            });
+
+            view.querySelector('#prev-cat-summary-period').addEventListener('click', () => {
+                if (scope === 'weekly') categorySummaryDate.setDate(categorySummaryDate.getDate() - 7);
+                else if (scope === 'monthly') categorySummaryDate.setMonth(categorySummaryDate.getMonth() - 1);
+                else categorySummaryDate.setFullYear(categorySummaryDate.getFullYear() - 1);
+                renderCategorySummaryView();
+            });
+            view.querySelector('#next-cat-summary-period').addEventListener('click', () => {
+                if (scope === 'weekly') categorySummaryDate.setDate(categorySummaryDate.getDate() + 7);
+                else if (scope === 'monthly') categorySummaryDate.setMonth(categorySummaryDate.getMonth() + 1);
+                else categorySummaryDate.setFullYear(categorySummaryDate.getFullYear() + 1);
+                renderCategorySummaryView();
+            });
+            
+            const handleCategoryClick = (e) => {
+                const card = e.target.closest('[data-category]');
+                if (!card) return;
+                
+                const category = card.dataset.category;
+                const type = card.dataset.type;
+                
+                const transactionsForModal = transactions.filter(t => t.type === type && t.category === category);
+                
+                showCategoryDetailsModal(type, transactionsForModal);
+            };
+
+            incomeListEl.addEventListener('click', handleCategoryClick);
+            expenseListEl.addEventListener('click', handleCategoryClick);
+        }
         
         function renderSummaryView() {
             const view = document.getElementById('summary-view');
             view.innerHTML = `
             <div class="max-w-6xl mx-auto">
-                <div class="glass-card p-6 text-center">
-                    <div class="flex items-center justify-center mb-4 gap-4">
-                        <button id="prev-year" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
-                        <h2 id="current-year" class="text-2xl font-bold text-foreground leading-tight"></h2>
-                        <button id="next-year" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                <div class="glass-card p-6">
+                    <div class="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
+                         <div class="flex items-center gap-4">
+                             <button id="prev-year" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                            <h2 id="current-year" class="text-2xl font-bold text-foreground leading-tight text-center"></h2>
+                            <button id="next-year" class="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/10"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-muted-foreground" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
+                         </div>
+                         <button id="export-summary-csv-btn" class="w-full sm:w-auto bg-primary text-primary-foreground px-4 py-2 rounded-xl hover:opacity-90 font-semibold transition-opacity flex items-center justify-center gap-2">
+                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                            <span>ส่งออก CSV (รายปี)</span>
+                        </button>
                     </div>
                     <div class="overflow-x-auto"><table class="min-w-full"><thead class="border-b-2 border-border"><tr>
                         <th class="px-6 py-3 text-left text-xs font-medium text-muted-foreground uppercase tracking-wider">เดือน</th>
@@ -948,6 +1064,7 @@
             </div>`;
             view.querySelector('#prev-year').addEventListener('click', () => { currentYear--; renderSummaryView(); });
             view.querySelector('#next-year').addEventListener('click', () => { currentYear++; renderSummaryView(); });
+            view.querySelector('#export-summary-csv-btn').addEventListener('click', () => exportToCSV('yearly', new Date(currentYear, 0, 1)));
 
             const yearTitle = view.querySelector('#current-year');
             const accountName = selectedAccountId && allAccounts[selectedAccountId]
@@ -1072,7 +1189,6 @@
 
             addAccountToggle.addEventListener('click', () => {
                 isAddAccountFormVisible = !isAddAccountFormVisible;
-                localStorage.setItem('isAddAccountFormVisible', isAddAccountFormVisible);
                 setAccountFormVisibility();
             });
 
@@ -1107,30 +1223,22 @@
                     const accountEl = document.createElement('div');
                     accountEl.className = 'flex justify-between items-center bg-black/5 dark:bg-white/5 p-4 rounded-2xl';
                     accountEl.innerHTML = `
-        <div class="flex items-center gap-3">
-            <!-- Account Icon -->
-            <span class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary mr-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
-                </svg>
-            </span>
-            <div>
-                <p class="font-semibold text-foreground">${account.accountName}</p>
-                <p class="text-sm text-muted-foreground">${account.accountType}</p>
-            </div>
-        </div>
-        <div class="flex items-center">
-            <div class="text-right">
-                <p class="font-bold text-lg ${balance >= 0 ? 'text-foreground' : 'text-rose-500'}">${formatCurrency(balance)}</p>
-                <p class="text-xs text-muted-foreground">ยอดคงเหลือ</p>
-            </div>
-            <button data-id="${id}" data-name="${account.accountName}" class="delete-account-btn p-2 ml-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-            </button>
-        </div>
-    `;
-    accountListEl.appendChild(accountEl);
-});
+                        <div>
+                            <p class="font-semibold text-foreground">${account.accountName}</p>
+                            <p class="text-sm text-muted-foreground">${account.accountType}</p>
+                        </div>
+                        <div class="flex items-center">
+                            <div class="text-right">
+                                <p class="font-bold text-lg ${balance >= 0 ? 'text-foreground' : 'text-rose-500'}">${formatCurrency(balance)}</p>
+                                <p class="text-xs text-muted-foreground">ยอดคงเหลือ</p>
+                            </div>
+                            <button data-id="${id}" data-name="${account.accountName}" class="delete-account-btn p-2 ml-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+                            </button>
+                        </div>
+                    `;
+                    accountListEl.appendChild(accountEl);
+                });
             }
 
             view.querySelector('#add-account-form').addEventListener('submit', addAccount);
@@ -1147,13 +1255,17 @@
                             <h3 class="text-xl font-semibold mb-4 text-foreground">สลับบัญชี</h3>
                             <div id="account-switcher-list" class="space-y-2"></div>
                         </div>
-                         <div class="glass-card p-6">
-                            <h3 class="text-xl font-semibold mb-4 text-foreground">จัดการข้อมูล</h3>
-                            <button id="export-csv-btn" class="w-full bg-emerald-500 text-white px-6 py-3 rounded-xl hover:bg-emerald-600 font-semibold transition-colors flex items-center justify-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM6.293 6.707a1 1 0 010-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 01-1.414 1.414L11 5.414V13a1 1 0 11-2 0V5.414L7.707 6.707a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                                <span>ส่งออกข้อมูลเป็น CSV</span>
-                            </button>
-                            <p class="text-xs text-muted-foreground mt-2 text-center">สำหรับนำเข้าไปยัง Google Sheets หรือโปรแกรมอื่นๆ</p>
+                        <div class="glass-card p-6">
+                            <h3 class="text-xl font-semibold mb-4 text-foreground">การตั้งค่าการแสดงผล</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="ui-scale-slider" class="flex justify-between items-center font-medium text-foreground mb-2">
+                                        <span>ขนาด UI</span>
+                                        <span id="ui-scale-value">100%</span>
+                                    </label>
+                                    <input type="range" id="ui-scale-slider" min="50" max="150" step="25" value="100" class="w-full h-2 bg-gray-300 rounded-lg appearance-none cursor-pointer dark:bg-slate-700">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="lg:col-span-2 space-y-6">
@@ -1161,28 +1273,10 @@
                             <h3 class="text-xl font-semibold mb-4 text-foreground">จัดการ Dashboard</h3>
                             <div id="dashboard-layout-manager" class="space-y-2"></div>
                             <hr class="border-border my-4">
-                            <h4 class="text-lg font-semibold mb-3 text-foreground">การแสดงผลการ์ดสรุปยอด</h4>
+                            <h4 class="text-lg font-semibold mb-3 text-foreground">การแสดงผลการ์ด</h4>
                             <div id="summary-card-manager" class="space-y-4"></div>
-                            <hr class="border-border my-4">
-                            <h4 class="text-lg font-semibold mb-3 text-foreground">การแสดงผลกราฟ</h4>
-                            <ul id="display-settings-list" class="space-y-4">
-                                <li class="flex justify-between items-center">
-                                    <span class="font-medium text-foreground">แสดงกราฟรายรับ</span>
-                                    <label for="toggle-income-chart-config" class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="toggle-income-chart-config" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-primary dark:peer-focus:ring-pink-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-pink-500"></div>
-                                    </label>
-                                </li>
-                                <li class="flex justify-between items-center">
-                                    <span class="font-medium text-foreground">แสดงกราฟรายจ่าย</span>
-                                     <label for="toggle-expense-chart-config" class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="toggle-expense-chart-config" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-primary dark:peer-focus:ring-pink-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-pink-500"></div>
-                                    </label>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="glass-card p-6">
+                         </div>
+                         <div class="glass-card p-6">
                             <h3 class="text-xl font-semibold mb-4 text-foreground">หมวดหมู่รายรับ</h3>
                             <div class="flex mb-4">
                                 <input type="text" id="new-income-category" class="flex-grow border border-border bg-black/5 dark:bg-white/5 rounded-l-xl p-3 focus:ring-2 focus:ring-ring focus:outline-none transition" placeholder="ชื่อหมวดหมู่ใหม่">
@@ -1203,6 +1297,7 @@
             </div>
             `;
             
+            // Render Account Switcher
             const accountSwitcherList = document.getElementById('account-switcher-list');
             accountSwitcherList.innerHTML = '';
             const accountIds = Object.keys(allAccounts);
@@ -1234,6 +1329,7 @@
                 });
             }
 
+            // Render Layout Manager
             const layoutManager = document.getElementById('dashboard-layout-manager');
             layoutManager.innerHTML = '';
             Object.keys(dashboardWidgets).forEach((key, index) => {
@@ -1260,6 +1356,7 @@
                 layoutManager.appendChild(itemEl);
             });
             
+            // Render Summary Card Manager
             const summaryCardManager = document.getElementById('summary-card-manager');
             summaryCardManager.innerHTML = '';
             Object.keys(summaryCardSettings).forEach(key => {
@@ -1270,19 +1367,37 @@
                     <span class="font-medium text-foreground">${setting.name}</span>
                     <label for="toggle-summary-${key}" class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="toggle-summary-${key}" data-key="${key}" class="sr-only peer summary-card-toggle" ${setting.visible ? 'checked' : ''}>
-                        <div class="w-11 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-primary dark:peer-focus:ring-pink-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-pink-500"></div>
+                        <div class="w-11 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer peer-focus:ring-2 peer-focus:ring-primary dark:peer-focus:ring-pink-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary dark:peer-checked:bg-pink-500"></div>
                     </label>
                 `;
                 summaryCardManager.appendChild(itemEl);
             });
 
+            // UI Scale controls
+            const uiScaleSlider = view.querySelector('#ui-scale-slider');
+            const uiScaleValue = view.querySelector('#ui-scale-value');
 
-            const incomeToggle = view.querySelector('#toggle-income-chart-config');
-            if (incomeToggle) incomeToggle.checked = getChartVisibility('Income');
-            
-            const expenseToggle = view.querySelector('#toggle-expense-chart-config');
-            if (expenseToggle) expenseToggle.checked = getChartVisibility('Expense');
+            const savedScale = localStorage.getItem('uiScale') || '100';
+            if (uiScaleSlider) {
+                uiScaleSlider.value = savedScale;
+            }
+            if (uiScaleValue) {
+                uiScaleValue.textContent = `${savedScale}%`;
+            }
 
+            if (uiScaleSlider) {
+                uiScaleSlider.addEventListener('input', (e) => {
+                    const scale = e.target.value;
+                    if (uiScaleValue) {
+                        uiScaleValue.textContent = `${scale}%`;
+                    }
+                    applyUiScale(scale);
+                    localStorage.setItem('uiScale', scale);
+                });
+            }
+
+
+            // Render Categories
             const incomeList = document.getElementById('income-category-list');
             incomeList.innerHTML = '';
             Object.entries(incomeCategories).forEach(([id, name]) => {
@@ -1300,6 +1415,7 @@
                 expenseList.appendChild(li);
             });
             
+            // Add event listeners after rendering the elements
             document.getElementById('add-income-category-btn').addEventListener('click', () => addCategory('income'));
             document.getElementById('add-expense-category-btn').addEventListener('click', () => addCategory('expense'));
         }
@@ -1318,26 +1434,18 @@
                     <div class="w-12 h-12 rounded-2xl bg-${color}-500/20 flex items-center justify-center text-${color}-600 dark:text-${color}-400 flex-shrink-0">${icon}</div>
                     <div class="min-w-0">
                         <p class="font-semibold text-foreground truncate">${t.description}</p>
-                        <p class="text-sm text-muted-foreground truncate">${t.category}</p>
+                        <p class="text-sm text-muted-foreground truncate">${t.category} &bull; ${formatShortThaiDate(new Date(t.date + 'T00:00:00'))}</p>
                     </div>
                 </div>
-                <div class="text-right flex-shrink-0 mx-2 sm:mx-4">
+                <div class="text-right flex-shrink-0 mx-4">
                     <p class="font-bold text-lg text-foreground">${formatCurrency(t.amount)}</p>
                 </div>
-                <div class="flex items-center gap-0 flex-shrink-0">
-                    <button data-id="${t.id}" class="edit-btn p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-full transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
-                            <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" clip-rule="evenodd" />
-                        </svg>
-                    </button>
-                    <button data-id="${t.id}" class="delete-btn p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
-                    </button>
+                <div class="flex items-center gap-0">
+                    <button data-id="${t.id}" class="delete-btn p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-full transition-colors"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg></button>
                 </div>`;
             listEl.appendChild(itemEl);
         }
-
+        
         function renderCharts(incomeData, expenseData, view) {
             const isDarkMode = document.documentElement.classList.contains('dark');
             const textColor = isDarkMode ? 'hsl(210 20% 98% / 0.8)' : 'hsl(224 71% 4% / 0.8)'; 
@@ -1382,6 +1490,31 @@
             }
         }
 
+        function renderDashboardCategoryList(container, summaryData, totalAmount, type) {
+            container.innerHTML = '';
+            if (Object.keys(summaryData).length === 0 || totalAmount === 0) {
+                container.innerHTML = '<p class="text-sm text-muted-foreground">ไม่มีข้อมูล</p>';
+                return;
+            }
+
+            const sortedCategories = Object.entries(summaryData).sort(([,a], [,b]) => b - a).slice(0, 5); // Show top 5
+
+            sortedCategories.forEach(([category, amount]) => {
+                const percentage = (amount / totalAmount) * 100;
+                const item = document.createElement('div');
+                item.innerHTML = `
+                    <div class="flex justify-between items-center text-sm mb-1">
+                        <span class="text-foreground truncate">${category}</span>
+                        <span class="font-medium text-muted-foreground">${formatCurrency(amount)}</span>
+                    </div>
+                    <div class="w-full bg-black/10 dark:bg-white/10 rounded-full h-1.5">
+                        <div class="bg-${type === 'income' ? 'emerald' : 'rose'}-500 h-1.5 rounded-full" style="width: ${percentage}%"></div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        }
+
         // --- MODAL FUNCTIONS ---
         function showDailyDetailsModal(dateStr) {
             const modalContainer = document.getElementById('daily-details-modal');
@@ -1422,6 +1555,7 @@
             modalContent.classList.replace('modal-enter-active', 'modal-leave-active');
             setTimeout(() => modalContainer.classList.add('hidden'), 300);
         }
+        
         function showCategoryDetailsModal(type, transactions) {
             currentModalTransactions = transactions; 
             currentModalType = type;
@@ -1432,7 +1566,7 @@
             const filterContainer = document.getElementById('category-filter-buttons');
             const typeNames = { income: 'รายรับ', expense: 'รายจ่าย', savings: 'เงินออม' };
             titleEl.textContent = `รายการ${typeNames[type]}`;
-            
+
             const categories = [...new Set(transactions.map(t => t.category))];
             
             if (type !== 'savings' && categories.length > 1) {
@@ -1442,29 +1576,46 @@
                     if (cat) filterContainer.innerHTML += `<button class="category-filter-btn border border-border text-foreground py-1.5 px-4 rounded-full text-sm font-medium hover:bg-black/10 dark:hover:bg-white/10 transition-colors" data-category="${cat}">${cat}</button>`;
                 });
             } else {
-                filterWrapper.classList.add('hidden');
+                filterWrapper.classList.add('hidden'); 
                 filterContainer.innerHTML = '';
             }
-            renderFilteredCategoryTransactions('all');
+            
+            renderFilteredCategoryTransactions('all', type);
+            
             modal.classList.remove('hidden');
             modalContent.classList.remove('modal-leave', 'modal-leave-active');
             modalContent.classList.add('modal-enter-active');
         }
-        function renderFilteredCategoryTransactions(selectedCategory) {
+
+        function renderFilteredCategoryTransactions(selectedCategory, type) {
             const listEl = document.getElementById('category-transaction-list');
             const totalEl = document.getElementById('category-modal-total');
             listEl.innerHTML = '';
+
             const transactionsToRender = selectedCategory === 'all' 
                 ? currentModalTransactions 
                 : currentModalTransactions.filter(t => t.category === selectedCategory);
+            
             const totalAmount = transactionsToRender.reduce((sum, t) => sum + t.amount, 0);
-            const typeStyles = { income: { text: 'ยอดรวมรายรับ', color: 'text-emerald-500 dark:text-emerald-400' }, expense: { text: 'ยอดรวมรายจ่าย', color: 'text-rose-500 dark:text-rose-400' }, savings: { text: 'ยอดรวมเงินออม', color: 'text-blue-500 dark:text-blue-400' }};
-            const style = typeStyles[currentModalType] || { text: 'ยอดรวม', color: 'text-foreground' };
+            
+            const typeStyles = { 
+                income: { text: 'ยอดรวมรายรับ', color: 'text-emerald-500 dark:text-emerald-400' }, 
+                expense: { text: 'ยอดรวมรายจ่าย', color: 'text-rose-500 dark:text-rose-400' }, 
+                savings: { text: 'ยอดรวมเงินออม', color: 'text-blue-500 dark:text-blue-400' }
+            };
+            const style = typeStyles[type] || { text: 'ยอดรวม', color: 'text-foreground' };
             const labelText = selectedCategory === 'all' ? style.text : `ยอดรวม (${selectedCategory})`;
+            
             totalEl.innerHTML = `<p class="text-sm text-muted-foreground">${labelText}</p><p class="text-3xl font-bold ${style.color}">${formatCurrency(totalAmount)}</p>`;
-            if (transactionsToRender.length === 0) { listEl.innerHTML = `<p class="text-center text-muted-foreground py-4">ไม่มีรายการ</p>`; return; }
-            transactionsToRender.sort((a, b) => b.id.localeCompare(a.id)).forEach(t => renderTransactionItem(t, listEl));
+            
+            if (transactionsToRender.length === 0) { 
+                listEl.innerHTML = `<p class="text-center text-muted-foreground py-4">ไม่มีรายการ</p>`; 
+                return; 
+            }
+            
+            transactionsToRender.sort((a, b) => new Date(b.date) - new Date(a.date) || b.id.localeCompare(a.id)).forEach(t => renderTransactionItem(t, listEl));
         }
+
         function showDatePickerModal() { 
             const modal = document.getElementById('date-picker-modal');
             const modalContent = modal.querySelector('.glass-card');
@@ -1484,16 +1635,18 @@
             const confirmBtn = document.getElementById('confirm-confirmation-btn');
             const cancelBtn = document.getElementById('cancel-confirmation-btn');
             
+            const iconWrapper = document.getElementById('confirmation-modal-icon-wrapper');
+            const warningIcon = document.getElementById('confirmation-modal-icon-warning');
+            const infoIcon = document.getElementById('confirmation-modal-icon-info');
+
             if (type === 'info') {
                 iconWrapper.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-blue-500/20 mb-4';
                 warningIcon.classList.add('hidden');
                 infoIcon.classList.remove('hidden');
-                confirmBtn.className = 'w-full px-6 py-3 rounded-xl bg-blue-500 text-white hover:opacity-90 transition-opacity font-semibold';
             } else { // default to warning
                 iconWrapper.className = 'mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-rose-500/20 mb-4';
                 warningIcon.classList.remove('hidden');
                 infoIcon.classList.add('hidden');
-                confirmBtn.className = 'w-full px-6 py-3 rounded-xl bg-destructive text-destructive-foreground hover:opacity-90 transition-opacity font-semibold';
             }
 
             if (onConfirm) {
@@ -1504,49 +1657,6 @@
                 cancelBtn.textContent = 'ปิด';
             }
 
-            modal.classList.remove('hidden');
-            modalContent.classList.remove('modal-leave', 'modal-leave-active');
-            modalContent.classList.add('modal-enter-active');
-        }
-
-        function showEditTransactionModal(transactionId) {
-            editingTransactionId = transactionId;
-            const transaction = allTransactions[transactionId];
-            if (!transaction) {
-                console.error("Transaction not found for editing");
-                return;
-            }
-
-            const modal = document.getElementById('edit-transaction-modal');
-            const modalContent = modal.querySelector('.glass-card');
-
-            // Populate form
-            document.getElementById('edit-transaction-description').value = transaction.description;
-            document.getElementById('edit-transaction-amount').value = transaction.amount;
-
-            // Set date
-            editFormDate = new Date(transaction.date + 'T00:00:00');
-            const dateDisplay = document.getElementById('edit-transaction-date-display');
-            const dateInput = document.getElementById('edit-transaction-date');
-            updateDateDisplay(dateDisplay, dateInput, editFormDate);
-
-            // Set type and trigger category population
-            const typeButtons = document.getElementById('edit-transaction-type-buttons');
-            const categoryButtons = document.getElementById('edit-transaction-category-buttons');
-            const categoryWrapper = document.getElementById('edit-category-wrapper');
-
-            handleTypeButtonClick(null, transaction.type, typeButtons, categoryButtons, categoryWrapper);
-            
-            // Set category AFTER type has been set and categories populated
-            setTimeout(() => {
-                const categoryBtn = categoryButtons.querySelector(`button[data-value="${transaction.category}"]`);
-                if (categoryBtn) {
-                    categoryBtn.classList.add('active');
-                }
-            }, 50); // Small delay to ensure categories are rendered
-
-
-            // Show modal
             modal.classList.remove('hidden');
             modalContent.classList.remove('modal-leave', 'modal-leave-active');
             modalContent.classList.add('modal-enter-active');
@@ -1606,47 +1716,15 @@
             }
             
             push(ref(db, 'transactions'), transactionData).then(() => {
+                if (transactionData.type === 'income' || transactionData.type === 'expense') {
+                    lastUsedCategories[transactionData.type] = transactionData.category;
+                    localStorage.setItem('lastUsedCategories', JSON.stringify(lastUsedCategories));
+                }
                 form.reset();
                 formDate = new Date();
                 updateDateDisplay(form.querySelector('#inline-transaction-date-display'), form.querySelector('#inline-transaction-date'), formDate);
                 handleTypeButtonClick(null, 'income', form.querySelector('#inline-transaction-type-buttons'), form.querySelector('#inline-transaction-category-buttons'), form.querySelector('#inline-category-wrapper'));
             }).catch(err => console.error("Write failed:", err));
-        }
-
-        function updateTransaction(e) {
-            e.preventDefault();
-            if (!editingTransactionId) return;
-
-            const form = document.getElementById('edit-transaction-form');
-            const type = form.querySelector('.type-btn.active')?.dataset.value;
-            const category = form.querySelector('.category-btn.active')?.dataset.value;
-
-            const updatedData = {
-                type: type,
-                description: form.querySelector('#edit-transaction-description').value,
-                amount: parseFloat(form.querySelector('#edit-transaction-amount').value),
-                category: type === 'savings' ? 'การออม' : category,
-                date: form.querySelector('#edit-transaction-date').value,
-                accountId: allTransactions[editingTransactionId].accountId // Keep the original accountId
-            };
-
-            if(!updatedData.type || !updatedData.description || !updatedData.amount || !updatedData.date) {
-                showConfirmationModal('ข้อมูลไม่ครบถ้วน', 'กรุณากรอกข้อมูลที่จำเป็นทั้งหมด', null, 'info');
-                return;
-            }
-            if(updatedData.type !== 'savings' && !updatedData.category) {
-                showConfirmationModal('ข้อมูลไม่ครบถ้วน', 'กรุณาเลือกหมวดหมู่สำหรับรายการนี้', null, 'info');
-                return;
-            }
-
-            const transactionRef = ref(db, 'transactions/' + editingTransactionId);
-            update(transactionRef, updatedData).then(() => {
-                hideModal('edit-transaction-modal');
-                editingTransactionId = null;
-            }).catch(err => {
-                console.error("Update failed:", err);
-                showConfirmationModal('เกิดข้อผิดพลาด', 'ไม่สามารถบันทึกการเปลี่ยนแปลงได้', null, 'warning');
-            });
         }
         function deleteTransaction(id) { remove(ref(db, `transactions/${id}`)); }
         
@@ -1733,124 +1811,128 @@
                 remove(ref(db, `config/${type}Categories/${id}`));
             }, 'warning');
         }
-
-        function escapeCSV(field) {
-            if (field === null || field === undefined) {
-                return '';
-            }
-            let str = String(field);
-            if (str.search(/("|,|\n)/g) >= 0) {
-                str = '"' + str.replace(/"/g, '""') + '"';
-            }
-            return str;
-        }
-
-        function exportToCSV() {
-            if (!selectedAccountId) {
-                showConfirmationModal('ไม่มีบัญชี', 'กรุณาเลือกบัญชีที่จะส่งออกก่อน', null, 'info');
+        
+        function exportToCSV(scope, date) {
+            if (!selectedAccountId || !allAccounts[selectedAccountId]) {
+                showConfirmationModal('ไม่สามารถส่งออกได้', 'กรุณาเลือกบัญชีที่ต้องการส่งออกข้อมูล', null, 'info');
                 return;
             }
 
-            const accountTransactions = Object.values(allTransactions).filter(t => t.accountId === selectedAccountId);
+            let transactionsToExport;
+            let fileName;
+            const accountName = allAccounts[selectedAccountId].accountName.replace(/[^a-z0-9\u0E00-\u0E7F]/gi, '_');
+            let totalIncome = 0;
+            let totalExpense = 0;
+            let totalSavings = 0;
 
-            if (accountTransactions.length === 0) {
-                showConfirmationModal('ไม่มีข้อมูล', `ไม่พบรายการธุรกรรมในบัญชี "${allAccounts[selectedAccountId]?.accountName || 'ที่เลือก'}" ที่จะส่งออก`, null, 'info');
-                return;
+            if (scope === 'monthly') {
+                const year = date.getFullYear();
+                const month = date.getMonth();
+                const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+                
+                transactionsToExport = Object.values(allTransactions).filter(t => 
+                    t.accountId === selectedAccountId && 
+                    t.date && 
+                    t.date.startsWith(monthStr)
+                );
+
+                if (transactionsToExport.length === 0) {
+                    showConfirmationModal('ไม่มีข้อมูล', `ไม่พบข้อมูลรายการในเดือน${getThaiMonthName(month)} พ.ศ. ${year + 543} สำหรับบัญชีนี้`, null, 'info');
+                    return;
+                }
+                
+                fileName = `ข้อมูล_${accountName}_${getThaiMonthName(month)}_${year + 543}.csv`;
+
+            } else if (scope === 'weekly') {
+                const startOfWeek = new Date(date);
+                startOfWeek.setHours(0, 0, 0, 0);
+                startOfWeek.setDate(startOfWeek.getDate() - startOfWeek.getDay());
+                const endOfWeek = new Date(startOfWeek);
+                endOfWeek.setDate(endOfWeek.getDate() + 6);
+                endOfWeek.setHours(23, 59, 59, 999);
+
+                 transactionsToExport = Object.values(allTransactions).filter(t => {
+                    if (t.accountId !== selectedAccountId) return false;
+                    const tDate = new Date(t.date + 'T00:00:00');
+                    return tDate >= startOfWeek && tDate <= endOfWeek;
+                });
+
+                 if (transactionsToExport.length === 0) {
+                    showConfirmationModal('ไม่มีข้อมูล', `ไม่พบข้อมูลรายการในสัปดาห์นี้`, null, 'info');
+                    return;
+                }
+
+                fileName = `ข้อมูล_${accountName}_สัปดาห์_${formatShortThaiDate(startOfWeek)}.csv`;
+
+
+            } else { // Yearly export
+                const year = date.getFullYear();
+                transactionsToExport = Object.values(allTransactions).filter(t => 
+                    t.accountId === selectedAccountId && 
+                    t.date && 
+                    new Date(t.date).getFullYear() === year
+                );
+
+                if (transactionsToExport.length === 0) {
+                     showConfirmationModal('ไม่มีข้อมูล', `ไม่พบข้อมูลรายการในปี พ.ศ. ${year + 543} สำหรับบัญชีนี้`, null, 'info');
+                    return;
+                }
+                
+                fileName = `ข้อมูล_${accountName}_ปี_${year + 543}.csv`;
             }
-
-            const headers = [
-                'Date', 'Description', 'Amount', 'Type', 'Category', 'AccountName'
-            ];
-
-            const rows = accountTransactions.map(t => {
-                const accountName = allAccounts[t.accountId] ? allAccounts[t.accountId].accountName : 'N/A';
-                return [
-                    t.date,
-                    t.description,
-                    t.amount,
-                    t.type,
-                    t.category,
-                    accountName
-                ].map(escapeCSV).join(',');
-            });
-
-            const finalBalance = calculateBalance(selectedAccountId);
-
-            const balanceRow = [
-                '', // Date
-                'ยอดคงเหลือ (Balance)', // Description
-                finalBalance, // Amount
-                '', // Type
-                '', // Category
-                ''  // AccountName
-            ].map(escapeCSV).join(',');
             
-            const emptyRow = ",,,,,";
+            transactionsToExport.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-            const csvContent = [headers.join(','), ...rows, emptyRow, balanceRow].join('\n');
-            const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
+            const headers = ['วันที่', 'ประเภท', 'หมวดหมู่', 'คำอธิบาย', 'จำนวนเงิน'];
+            const typeTranslations = { income: 'รายรับ', expense: 'รายจ่าย', savings: 'ออม' };
+            
+            const csvRows = [headers.join(',')];
+
+            for (const t of transactionsToExport) {
+                if (t.type === 'income') totalIncome += t.amount;
+                else if (t.type === 'expense') totalExpense += t.amount;
+                else if (t.type === 'savings') totalSavings += t.amount;
+
+                const values = [
+                    formatCSVDate(t.date),
+                    typeTranslations[t.type] || t.type,
+                    `"${(t.category || '').replace(/"/g, '""')}"`,
+                    `"${(t.description || '').replace(/"/g, '""')}"`,
+                    t.amount.toFixed(2)
+                ];
+                csvRows.push(values.join(','));
+            }
+
+            // Add summary rows
+            const balance = totalIncome - totalExpense - totalSavings;
+            csvRows.push(''); // Empty row for spacing
+            csvRows.push(',,,,สรุปยอด');
+            csvRows.push(`,,,,รวมรายรับ,${totalIncome.toFixed(2)}`);
+            csvRows.push(`,,,,รวมรายจ่าย,${totalExpense.toFixed(2)}`);
+            csvRows.push(`,,,,รวมเงินออม,${totalSavings.toFixed(2)}`);
+            csvRows.push(`,,,,คงเหลือสุทธิ,${balance.toFixed(2)}`);
+
+
+            const csvString = csvRows.join('\n');
+            const blob = new Blob([`\uFEFF${csvString}`], { type: 'text/csv;charset=utf-8;' });
+
+            const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            const dateStr = new Date().toISOString().slice(0, 10);
-            const accountNameForFile = allAccounts[selectedAccountId] ? allAccounts[selectedAccountId].accountName.replace(/[^a-z0-9]/gi, '_') : 'export';
-            link.setAttribute("download", `finance-export-${accountNameForFile}-${dateStr}.csv`);
+            link.setAttribute('href', url);
+            link.setAttribute('download', fileName);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }
-        
+
         // --- EVENT HANDLERS ---
         function handleTransactionListClick(e) {
-            const editBtn = e.target.closest('.edit-btn');
-            if (editBtn) {
-                showEditTransactionModal(editBtn.dataset.id);
-                return;
-            }
-
             const deleteBtn = e.target.closest('.delete-btn');
             if (deleteBtn) {
                 showConfirmationModal('ยืนยันการลบ', 'คุณแน่ใจหรือไม่ว่าต้องการลบรายการนี้?', () => {
                     deleteTransaction(deleteBtn.dataset.id);
                 }, 'warning');
-            }
-        }
-        function handleCategorySummaryClick(e) {
-            const item = e.target.closest('.category-summary-item');
-            if (!item) return;
-
-            const { type, category } = item.dataset;
-            
-            const isWeekly = currentView === 'weekly';
-            const dateForPeriod = isWeekly ? currentWeekDate : currentDate;
-            let start, end;
-
-            if (isWeekly) {
-                start = new Date(dateForPeriod);
-                start.setHours(0, 0, 0, 0);
-                start.setDate(start.getDate() - start.getDay());
-                end = new Date(start);
-                end.setDate(end.getDate() + 6);
-                end.setHours(23, 59, 59, 999);
-            } else {
-                const year = dateForPeriod.getFullYear();
-                const month = dateForPeriod.getMonth();
-                start = new Date(year, month, 1);
-                end = new Date(year, month + 1, 0);
-                end.setHours(23, 59, 59, 999);
-            }
-
-            const transactionsToShow = Object.values(allTransactions).filter(t => {
-                if (t.accountId !== selectedAccountId || t.type !== type || t.category !== category) {
-                    return false;
-                }
-                const tDate = new Date(t.date + 'T00:00:00');
-                return tDate >= start && tDate <= end;
-            });
-
-            if (transactionsToShow.length > 0) {
-                showCategoryDetailsModal(type, transactionsToShow);
             }
         }
         function handleDeleteAccountClick(e) {
@@ -1875,9 +1957,17 @@
             const type = typeValue || e.target.dataset.value;
             if (!type) return;
             typeButtonContainer.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', btn.dataset.value === type));
-            const selectedCategoryBtn = categoryButtonContainer.querySelector('.category-btn.active');
-            if(selectedCategoryBtn) selectedCategoryBtn.classList.remove('active');
             populateCategoryButtons(type, categoryButtonContainer, categoryWrapper);
+            
+            const lastUsed = lastUsedCategories[type];
+            if (lastUsed) {
+                const lastUsedBtn = categoryButtonContainer.querySelector(`button[data-value="${lastUsed}"]`);
+                if (lastUsedBtn) {
+                    lastUsedBtn.classList.add('active');
+                }
+            }
+            // Update form height after categories are populated
+            setTimeout(updateAddItemFormHeight, 50);
         }
         function handleSummaryCardClick(e) {
             const card = e.target.closest('[data-type]');
@@ -1921,6 +2011,25 @@
         }
 
         // --- APP INITIALIZATION ---
+        
+        function updateAddItemFormHeight() {
+            const wrapper = document.getElementById('add-item-form-wrapper');
+            const chevron = document.getElementById('add-item-chevron');
+            if (!wrapper || !chevron) return;
+
+            if (isAddItemFormVisible) {
+                // Set max-height to the actual scroll height to make it expand
+                wrapper.style.maxHeight = wrapper.scrollHeight + 'px';
+                wrapper.style.opacity = '1';
+                chevron.classList.remove('rotate-180');
+            } else {
+                // Set max-height to 0 to collapse it
+                wrapper.style.maxHeight = '0px';
+                wrapper.style.opacity = '0';
+                chevron.classList.add('rotate-180');
+            }
+        }
+
         function setupInlineForm(formContainer) {
             const form = formContainer.querySelector('#inline-transaction-form'); if (!form) return;
             const typeButtons = form.querySelector('#inline-transaction-type-buttons');
@@ -1930,6 +2039,19 @@
             const dateInput = form.querySelector('#inline-transaction-date');
             const submitBtn = form.querySelector('#add-transaction-btn');
             const warningEl = form.querySelector('#form-account-warning');
+
+            // Collapsible form logic
+            const addItemToggle = formContainer.querySelector('#add-item-toggle');
+            const addItemWrapper = formContainer.querySelector('#add-item-form-wrapper');
+            addItemWrapper.classList.add('transition-all', 'duration-500', 'ease-in-out');
+
+
+            addItemToggle.addEventListener('click', () => {
+                isAddItemFormVisible = !isAddItemFormVisible;
+                localStorage.setItem('isAddItemFormVisible', isAddItemFormVisible);
+                updateAddItemFormHeight();
+            });
+
 
             if (!selectedAccountId) {
                 if(submitBtn) submitBtn.disabled = true;
@@ -1950,8 +2072,11 @@
             });
             typeButtons.addEventListener('click', (e) => { const button = e.target.closest('.type-btn'); if(button) handleTypeButtonClick(e, null, typeButtons, categoryButtons, categoryWrapper); });
             categoryButtons.addEventListener('click', (e) => { const button = e.target.closest('.category-btn'); if (!button) return; categoryButtons.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active'); });
+            
+            // Initial Setup
             updateDateDisplay(dateDisplay, dateInput, formDate);
             handleTypeButtonClick(null, 'income', typeButtons, categoryButtons, categoryWrapper);
+            setTimeout(updateAddItemFormHeight, 100);
         }
         function renderDatePicker() {
             const grid = document.getElementById('datepicker-grid'); const monthYearEl = document.getElementById('datepicker-month-year');
@@ -2004,6 +2129,7 @@
                 tracker: document.getElementById('tab-tracker'), 
                 weekly: document.getElementById('tab-weekly'), 
                 calendar: document.getElementById('tab-calendar'), 
+                'category-summary': document.getElementById('tab-category-summary'),
                 summary: document.getElementById('tab-summary'),
                 account: document.getElementById('tab-account') 
             };
@@ -2012,12 +2138,13 @@
             categoryDetailsModal = document.getElementById('category-details-modal');
             datePickerModal = document.getElementById('date-picker-modal');
             confirmationModal = document.getElementById('confirmation-modal');
-            editTransactionModal = document.getElementById('edit-transaction-modal');
-
 
             loadLayout();
             loadSummaryCardSettings();
-            loadAccountFormVisibility();
+            loadAddItemFormVisibility();
+            loadLastUsedCategories();
+            loadUiScale();
+
             const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             applyTheme(savedTheme);
 
@@ -2029,31 +2156,6 @@
 
             document.getElementById('close-daily-modal-btn').addEventListener('click', () => hideModal('daily-details-modal'));
             document.getElementById('close-category-modal-btn').addEventListener('click', () => hideModal('category-details-modal'));
-            
-            // Edit modal listeners
-            document.getElementById('close-edit-modal-btn').addEventListener('click', () => hideModal('edit-transaction-modal'));
-            document.getElementById('cancel-edit-btn').addEventListener('click', () => hideModal('edit-transaction-modal'));
-            document.getElementById('edit-transaction-form').addEventListener('submit', updateTransaction);
-            const editTypeButtons = document.getElementById('edit-transaction-type-buttons');
-            const editCategoryButtons = document.getElementById('edit-transaction-category-buttons');
-            const editCategoryWrapper = document.getElementById('edit-category-wrapper');
-            editTypeButtons.addEventListener('click', (e) => {
-                const button = e.target.closest('.type-btn');
-                if(button) handleTypeButtonClick(e, null, editTypeButtons, editCategoryButtons, editCategoryWrapper);
-            });
-            editCategoryButtons.addEventListener('click', (e) => {
-                const button = e.target.closest('.category-btn');
-                if (!button) return;
-                editCategoryButtons.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-            });
-             document.getElementById('edit-transaction-date-display').addEventListener('click', () => {
-                datePickerFor = 'edit-transaction';
-                datePickerDate = new Date(editFormDate);
-                showDatePickerModal();
-            });
-
-            // Date picker listeners
             document.getElementById('prev-datepicker-month').addEventListener('click', () => { datePickerDate.setMonth(datePickerDate.getMonth() - 1); renderDatePicker(); });
             document.getElementById('next-datepicker-month').addEventListener('click', () => { datePickerDate.setMonth(datePickerDate.getMonth() + 1); renderDatePicker(); });
             document.getElementById('datepicker-grid').addEventListener('click', (e) => { const dayBtn = e.target.closest('.datepicker-day'); if (dayBtn) { datePickerDate = new Date(datePickerDate.getFullYear(), datePickerDate.getMonth(), parseInt(dayBtn.dataset.day)); renderDatePicker(); } });
@@ -2074,40 +2176,25 @@
                     if (accountDateDisplay && accountDateInput) {
                         updateDateDisplay(accountDateDisplay, accountDateInput, accountStartDate);
                     }
-                } else if (datePickerFor === 'edit-transaction') {
-                    editFormDate = new Date(datePickerDate);
-                    const dateDisplay = document.getElementById('edit-transaction-date-display');
-                    const dateInput = document.getElementById('edit-transaction-date');
-                    if (dateDisplay && dateInput) {
-                        updateDateDisplay(dateDisplay, dateInput, editFormDate);
-                    }
                 }
                 hideModal('date-picker-modal');
             });
             
-            document.getElementById('content-area').addEventListener('click', (e) => {
+            // Use event delegation for dynamically created content
+            document.body.addEventListener('click', (e) => {
+                // Category Filter Button in Modal
                 const categoryFilterBtn = e.target.closest('.category-filter-btn');
                 if(categoryFilterBtn) {
                     const category = categoryFilterBtn.dataset.category; 
                     document.querySelectorAll('#category-filter-buttons .category-filter-btn').forEach(btn => btn.classList.remove('active')); 
                     categoryFilterBtn.classList.add('active'); 
-                    renderFilteredCategoryTransactions(category);
-                    return;
-                }
-
-                const categorySummaryItem = e.target.closest('.category-summary-item');
-                if (categorySummaryItem) {
-                    handleCategorySummaryClick(e);
+                    renderFilteredCategoryTransactions(category, currentModalType);
                     return;
                 }
 
                 const configView = e.target.closest('#config-view');
                 if(configView) {
-                    const delCatBtn = e.target.closest('.delete-category-btn'); 
-                    if (delCatBtn) { 
-                        deleteCategory(delCatBtn.dataset.type, delCatBtn.dataset.id); 
-                        return; 
-                    }
+                    const delCatBtn = e.target.closest('.delete-category-btn'); if (delCatBtn) { deleteCategory(delCatBtn.dataset.type, delCatBtn.dataset.id); return; }
                 
                     const switchAccountItem = e.target.closest('[data-account-id]');
                     if (switchAccountItem) {
@@ -2118,23 +2205,9 @@
                         return;
                     }
 
-                    if (e.target.closest('#export-csv-btn')) {
-                        showConfirmationModal(
-                            'ยืนยันการส่งออก',
-                            'คุณต้องการส่งออกข้อมูลธุรกรรมทั้งหมดเป็นไฟล์ CSV หรือไม่?',
-                            () => { exportToCSV(); },
-                            'info'
-                        );
-                        return;
-                    }
-
-                    const toggle = e.target.closest('.widget-toggle, #toggle-income-chart-config, #toggle-expense-chart-config, .summary-card-toggle');
+                    const toggle = e.target.closest('.widget-toggle, .summary-card-toggle');
                     if (toggle) {
-                        if (toggle.id === 'toggle-income-chart-config') {
-                            setChartVisibility('Income', toggle.checked);
-                        } else if (toggle.id === 'toggle-expense-chart-config') {
-                            setChartVisibility('Expense', toggle.checked);
-                        } else if (toggle.classList.contains('widget-toggle')) {
+                        if (toggle.classList.contains('widget-toggle')) {
                             dashboardWidgets[toggle.dataset.key].visible = toggle.checked;
                             saveLayout();
                         } else if (toggle.classList.contains('summary-card-toggle')) {
@@ -2193,15 +2266,14 @@
             });
             onValue(ref(db, 'config/incomeCategories'), (snapshot) => { 
                 incomeCategories = snapshot.val() || {}; 
-                if(currentView === 'config') renderConfigView(); 
+                renderCurrentView();
             });
             onValue(ref(db, 'config/expenseCategories'), (snapshot) => { 
                 expenseCategories = snapshot.val() || {}; 
-                if(currentView === 'config') renderConfigView(); 
+                renderCurrentView();
             });
 
-            const lastView = localStorage.getItem('lastView') || 'tracker';
-            switchView(lastView);
+            switchView('tracker');
         });
     </script>
 </body>
